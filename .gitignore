@@ -1,0 +1,13 @@
+# Binary
+cliq
+
+# OS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Test artifacts
+cliq.json
