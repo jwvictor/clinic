@@ -5,11 +5,11 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/togglemedia/cliq/internal/config"
-	"github.com/togglemedia/cliq/internal/doctor"
-	"github.com/togglemedia/cliq/internal/installer"
-	"github.com/togglemedia/cliq/internal/registry"
-	"github.com/togglemedia/cliq/internal/skills"
+	"github.com/togglemedia/clinic/internal/config"
+	"github.com/togglemedia/clinic/internal/doctor"
+	"github.com/togglemedia/clinic/internal/installer"
+	"github.com/togglemedia/clinic/internal/registry"
+	"github.com/togglemedia/clinic/internal/skills"
 )
 
 var addCmd = &cobra.Command{
@@ -22,7 +22,7 @@ var addCmd = &cobra.Command{
 
 		tool, ok := reg.GetTool(toolName)
 		if !ok {
-			return fmt.Errorf("unknown tool: %s\n\nRun 'cliq stacks' to see available tools", toolName)
+			return fmt.Errorf("unknown tool: %s\n\nRun 'clinic stacks' to see available tools", toolName)
 		}
 
 		if err := config.EnsureDirs(); err != nil {

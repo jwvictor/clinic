@@ -7,8 +7,8 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/togglemedia/cliq/internal/installer"
-	"github.com/togglemedia/cliq/internal/registry"
+	"github.com/togglemedia/clinic/internal/installer"
+	"github.com/togglemedia/clinic/internal/registry"
 )
 
 // GenerateData holds the template variables for skill generation.
@@ -94,9 +94,9 @@ Prefer ` + "`--json`" + ` or structured output flags when parsing results progra
 
 ## Auth
 {{- if .AuthEnvVar}}
-Managed by Cliq. Token injected via ` + "`{{.AuthEnvVar}}`" + ` env var.
+Managed by Clinic. Token injected via ` + "`{{.AuthEnvVar}}`" + ` env var.
 {{- end}}
-If auth fails, run ` + "`cliq auth {{.Name}}`" + ` or ` + "`cliq doctor`" + `.
+If auth fails, run ` + "`clinic auth {{.Name}}`" + ` or ` + "`clinic doctor`" + `.
 {{- if .AuthCmd}}
 To re-authenticate manually: ` + "`{{.AuthCmd}}`" + `
 {{- end}}

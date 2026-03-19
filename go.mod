@@ -1,4 +1,4 @@
-module github.com/togglemedia/cliq
+module github.com/togglemedia/clinic
 
 go 1.25.6
 

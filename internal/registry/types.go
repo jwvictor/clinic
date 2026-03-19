@@ -1,6 +1,6 @@
 package registry
 
-// ToolDef defines a CLI tool that Cliq can manage.
+// ToolDef defines a CLI tool that Clinic can manage.
 type ToolDef struct {
 	Name           string         `json:"name"`
 	Command        string         `json:"command"`

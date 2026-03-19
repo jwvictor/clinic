@@ -4,9 +4,9 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-	"github.com/togglemedia/cliq/internal/config"
-	"github.com/togglemedia/cliq/internal/installer"
-	"github.com/togglemedia/cliq/internal/registry"
+	"github.com/togglemedia/clinic/internal/config"
+	"github.com/togglemedia/clinic/internal/installer"
+	"github.com/togglemedia/clinic/internal/registry"
 )
 
 var updateCmd = &cobra.Command{
@@ -39,7 +39,7 @@ var updateCmd = &cobra.Command{
 			status := installer.Detect(tool)
 
 			if !status.Installed {
-				fmt.Printf("%-16s not installed — run 'cliq add %s'\n", toolName, toolName)
+				fmt.Printf("%-16s not installed — run 'clinic add %s'\n", toolName, toolName)
 				continue
 			}
 

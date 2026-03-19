@@ -5,8 +5,8 @@ import (
 	"sort"
 
 	"github.com/spf13/cobra"
-	"github.com/togglemedia/cliq/internal/config"
-	"github.com/togglemedia/cliq/internal/registry"
+	"github.com/togglemedia/clinic/internal/config"
+	"github.com/togglemedia/clinic/internal/registry"
 )
 
 var listAll bool
@@ -33,7 +33,7 @@ func listInstalled() error {
 	}
 
 	if len(lf.Tools) == 0 {
-		fmt.Println("No tools in workspace. Run 'cliq init --stack <name>' to get started.")
+		fmt.Println("No tools in workspace. Run 'clinic init --stack <name>' to get started.")
 		return nil
 	}
 

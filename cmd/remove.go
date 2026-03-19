@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-	"github.com/togglemedia/cliq/internal/config"
-	"github.com/togglemedia/cliq/internal/skills"
+	"github.com/togglemedia/clinic/internal/config"
+	"github.com/togglemedia/clinic/internal/skills"
 )
 
 var removeCmd = &cobra.Command{
@@ -21,7 +21,7 @@ var removeCmd = &cobra.Command{
 		}
 
 		if _, ok := lf.Tools[toolName]; !ok {
-			return fmt.Errorf("%s is not in your cliq workspace", toolName)
+			return fmt.Errorf("%s is not in your clinic workspace", toolName)
 		}
 
 		// Remove skill file
@@ -37,7 +37,7 @@ var removeCmd = &cobra.Command{
 			return err
 		}
 
-		fmt.Printf("✓ Removed %s from cliq workspace\n", toolName)
+		fmt.Printf("✓ Removed %s from clinic workspace\n", toolName)
 		fmt.Printf("\nNote: The CLI binary itself was not uninstalled.\n")
 		fmt.Printf("To uninstall it, run the appropriate command for your package manager.\n")
 		return nil

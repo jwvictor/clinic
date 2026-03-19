@@ -4,8 +4,8 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/togglemedia/cliq/internal/installer"
-	"github.com/togglemedia/cliq/internal/registry"
+	"github.com/togglemedia/clinic/internal/installer"
+	"github.com/togglemedia/clinic/internal/registry"
 )
 
 // ToolHealth represents the full health status of a managed tool.

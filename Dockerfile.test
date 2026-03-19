@@ -25,13 +25,13 @@ WORKDIR /home/tester
 RUN /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" \
     && echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> ~/.bashrc
 
-# Copy and build cliq
+# Copy and build clinic
 USER root
 WORKDIR /build
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
-RUN go build -o /usr/local/bin/cliq .
+RUN go build -o /usr/local/bin/clinic .
 
 # Switch to test user
 USER tester

@@ -2,27 +2,27 @@
 
 # Local build
 build:
-	go build -o cliq .
+	go build -o clinic .
 
 # Build the test container
 test-build:
-	docker build -f Dockerfile.test -t cliq-test .
+	docker build -f Dockerfile.test -t clinic-test .
 
 # Run tests interactively in a fresh container (destroyed on exit)
 test-shell:
-	docker run --rm -it cliq-test /bin/bash
+	docker run --rm -it clinic-test /bin/bash
 
-# Run a specific cliq command in a fresh container
+# Run a specific clinic command in a fresh container
 test-run:
-	docker run --rm cliq-test cliq $(CMD)
+	docker run --rm clinic-test clinic $(CMD)
 
 # Quick smoke test — version, stacks, list
 test-smoke:
-	docker run --rm cliq-test sh -c '\
-		echo "=== version ===" && cliq version && \
-		echo "=== stacks ===" && cliq stacks && \
-		echo "=== list --all ===" && cliq list --all'
+	docker run --rm clinic-test sh -c '\
+		echo "=== version ===" && clinic version && \
+		echo "=== stacks ===" && clinic stacks && \
+		echo "=== list --all ===" && clinic list --all'
 
 # Clean up test images
 test-clean:
-	docker rmi cliq-test 2>/dev/null || true
+	docker rmi clinic-test 2>/dev/null || true

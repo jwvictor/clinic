@@ -7,9 +7,9 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
-	"github.com/togglemedia/cliq/internal/config"
-	"github.com/togglemedia/cliq/internal/doctor"
-	"github.com/togglemedia/cliq/internal/registry"
+	"github.com/togglemedia/clinic/internal/config"
+	"github.com/togglemedia/clinic/internal/doctor"
+	"github.com/togglemedia/clinic/internal/registry"
 )
 
 var authStatus bool

@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
-	"github.com/togglemedia/cliq/internal/registry"
+	"github.com/togglemedia/clinic/internal/registry"
 )
 
 var stacksCmd = &cobra.Command{
@@ -24,7 +24,7 @@ var stacksCmd = &cobra.Command{
 			fmt.Println()
 		}
 
-		fmt.Println("Run: cliq init --stack <name>")
+		fmt.Println("Run: clinic init --stack <name>")
 		return nil
 	},
 }

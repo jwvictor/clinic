@@ -7,31 +7,31 @@ import (
 	"runtime"
 )
 
-// CliqHome returns the path to ~/.cliq/
-func CliqHome() string {
+// ClinicHome returns the path to ~/.clinic/
+func ClinicHome() string {
 	home, _ := os.UserHomeDir()
-	return filepath.Join(home, ".cliq")
+	return filepath.Join(home, ".clinic")
 }
 
-// BinDir returns ~/.cliq/bin/
+// BinDir returns ~/.clinic/bin/
 func BinDir() string {
-	return filepath.Join(CliqHome(), "bin")
+	return filepath.Join(ClinicHome(), "bin")
 }
 
-// VersionsDir returns ~/.cliq/versions/
+// VersionsDir returns ~/.clinic/versions/
 func VersionsDir() string {
-	return filepath.Join(CliqHome(), "versions")
+	return filepath.Join(ClinicHome(), "versions")
 }
 
-// CacheDir returns ~/.cliq/cache/
+// CacheDir returns ~/.clinic/cache/
 func CacheDir() string {
-	return filepath.Join(CliqHome(), "cache")
+	return filepath.Join(ClinicHome(), "cache")
 }
 
-// EnsureDirs creates the cliq directory structure if it doesn't exist.
+// EnsureDirs creates the clinic directory structure if it doesn't exist.
 func EnsureDirs() error {
 	dirs := []string{
-		CliqHome(),
+		ClinicHome(),
 		BinDir(),
 		VersionsDir(),
 		CacheDir(),
@@ -53,7 +53,7 @@ func Platform() (os_ string, arch string) {
 	return
 }
 
-// Lockfile represents cliq.toml (simplified as JSON for now, will migrate to TOML).
+// Lockfile represents clinic.toml (simplified as JSON for now, will migrate to TOML).
 type Lockfile struct {
 	Project ProjectConfig          `json:"project"`
 	Tools   map[string]ToolLock    `json:"tools"`
@@ -61,7 +61,7 @@ type Lockfile struct {
 
 type ProjectConfig struct {
 	Stack        string `json:"stack,omitempty"`
-	CliqVersion  string `json:"cliq_version"`
+	ClinicVersion  string `json:"clinic_version"`
 }
 
 type ToolLock struct {
@@ -69,9 +69,9 @@ type ToolLock struct {
 	InstalledVia string `json:"installed_via"`
 }
 
-// LockfilePath returns the path to cliq.json in the current directory.
+// LockfilePath returns the path to clinic.json in the current directory.
 func LockfilePath() string {
-	return "cliq.json"
+	return "clinic.json"
 }
 
 // LoadLockfile reads the lockfile from the current directory.
@@ -80,7 +80,7 @@ func LoadLockfile() (*Lockfile, error) {
 	if err != nil {
 		if os.IsNotExist(err) {
 			return &Lockfile{
-				Project: ProjectConfig{CliqVersion: "0.1.0"},
+				Project: ProjectConfig{ClinicVersion: "0.1.0"},
 				Tools:   make(map[string]ToolLock),
 			}, nil
 		}

@@ -4,11 +4,11 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-	"github.com/togglemedia/cliq/internal/config"
-	"github.com/togglemedia/cliq/internal/doctor"
-	"github.com/togglemedia/cliq/internal/installer"
-	"github.com/togglemedia/cliq/internal/registry"
-	"github.com/togglemedia/cliq/internal/skills"
+	"github.com/togglemedia/clinic/internal/config"
+	"github.com/togglemedia/clinic/internal/doctor"
+	"github.com/togglemedia/clinic/internal/installer"
+	"github.com/togglemedia/clinic/internal/registry"
+	"github.com/togglemedia/clinic/internal/skills"
 )
 
 var generatePlatform string
@@ -23,7 +23,7 @@ var generateCmd = &cobra.Command{
 		}
 
 		if len(lf.Tools) == 0 {
-			fmt.Println("No tools in workspace. Run 'cliq init --stack <name>' first.")
+			fmt.Println("No tools in workspace. Run 'clinic init --stack <name>' first.")
 			return nil
 		}
 

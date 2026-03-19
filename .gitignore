@@ -1,5 +1,5 @@
 # Binary
-cliq
+clinic
 
 # OS
 .DS_Store
@@ -10,4 +10,4 @@ cliq
 *.swp
 
 # Test artifacts
-cliq.json
+clinic.json

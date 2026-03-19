@@ -4,9 +4,9 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-	"github.com/togglemedia/cliq/internal/config"
-	"github.com/togglemedia/cliq/internal/doctor"
-	"github.com/togglemedia/cliq/internal/registry"
+	"github.com/togglemedia/clinic/internal/config"
+	"github.com/togglemedia/clinic/internal/doctor"
+	"github.com/togglemedia/clinic/internal/registry"
 )
 
 var doctorCmd = &cobra.Command{
@@ -19,7 +19,7 @@ var doctorCmd = &cobra.Command{
 		}
 
 		if len(lf.Tools) == 0 {
-			fmt.Println("No tools in workspace. Run 'cliq init --stack <name>' to get started.")
+			fmt.Println("No tools in workspace. Run 'clinic init --stack <name>' to get started.")
 			return nil
 		}
 
@@ -71,7 +71,7 @@ var doctorCmd = &cobra.Command{
 			} else if !health.AuthOK && tool.Auth.InjectType != "none" {
 				statusStr = "⚠ auth needed"
 			} else if !health.HasSkill {
-				statusStr = "⚠ run cliq generate"
+				statusStr = "⚠ run clinic generate"
 			}
 
 			fmt.Printf("%-16s %-12s %-10s %-8s %s\n", toolName, versionStr, authStr, skillStr, statusStr)

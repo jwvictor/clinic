@@ -5,11 +5,11 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/togglemedia/cliq/internal/config"
-	"github.com/togglemedia/cliq/internal/doctor"
-	"github.com/togglemedia/cliq/internal/installer"
-	"github.com/togglemedia/cliq/internal/registry"
-	"github.com/togglemedia/cliq/internal/skills"
+	"github.com/togglemedia/clinic/internal/config"
+	"github.com/togglemedia/clinic/internal/doctor"
+	"github.com/togglemedia/clinic/internal/installer"
+	"github.com/togglemedia/clinic/internal/registry"
+	"github.com/togglemedia/clinic/internal/skills"
 )
 
 var initStack string
@@ -20,7 +20,7 @@ var initCmd = &cobra.Command{
 	Long:  `Sets up your agent workspace by installing, authenticating, and generating skills for a curated stack of CLI tools.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if err := config.EnsureDirs(); err != nil {
-			return fmt.Errorf("creating cliq directories: %w", err)
+			return fmt.Errorf("creating clinic directories: %w", err)
 		}
 
 		reg := registry.Load()
@@ -32,7 +32,7 @@ var initCmd = &cobra.Command{
 				fmt.Printf("  %-16s %s (%d tools)\n", s.Name, s.Description, len(s.Tools))
 			}
 			fmt.Println()
-			fmt.Println("Run: cliq init --stack <name>")
+			fmt.Println("Run: clinic init --stack <name>")
 			return nil
 		}
 
@@ -41,7 +41,7 @@ var initCmd = &cobra.Command{
 			return fmt.Errorf("unknown stack: %s", initStack)
 		}
 
-		fmt.Printf("Cliq — Setting up your agent workspace\n\n")
+		fmt.Printf("Clinic — Setting up your agent workspace\n\n")
 		fmt.Printf("Stack: %s (%d tools)\n\n", stack.Name, len(stack.Tools))
 
 		lf, err := config.LoadLockfile()
