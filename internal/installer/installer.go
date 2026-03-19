@@ -153,6 +153,37 @@ func checkNodeVersion(requires string) bool {
 	return true
 }
 
+// Uninstall removes a tool using the package manager that installed it.
+func Uninstall(tool registry.ToolDef, installedVia string) error {
+	switch installedVia {
+	case "brew":
+		formula := tool.Command
+		for _, m := range tool.InstallMethods {
+			if m.Type == "brew" && m.Formula != "" {
+				formula = m.Formula
+				break
+			}
+		}
+		return runInstall("brew", "uninstall", formula)
+	case "npm":
+		pkg := tool.Command
+		for _, m := range tool.InstallMethods {
+			if m.Type == "npm" && m.Package != "" {
+				pkg = m.Package
+				break
+			}
+		}
+		args := []string{"uninstall", "-g", pkg}
+		err := runInstall("npm", args...)
+		if err != nil && runtime.GOOS == "linux" {
+			return runInstall("sudo", append([]string{"npm"}, args...)...)
+		}
+		return err
+	default:
+		return fmt.Errorf("don't know how to uninstall %s (installed via %s)", tool.Name, installedVia)
+	}
+}
+
 func runInstall(name string, args ...string) error {
 	cmd := exec.Command(name, args...)
 	out, err := cmd.CombinedOutput()

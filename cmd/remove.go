@@ -5,8 +5,12 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/togglemedia/clinic/internal/config"
+	"github.com/togglemedia/clinic/internal/installer"
+	"github.com/togglemedia/clinic/internal/registry"
 	"github.com/togglemedia/clinic/internal/skills"
 )
+
+var keepBinary bool
 
 var removeCmd = &cobra.Command{
 	Use:   "remove <tool>",
@@ -20,11 +24,24 @@ var removeCmd = &cobra.Command{
 			return err
 		}
 
-		if _, ok := lf.Tools[toolName]; !ok {
+		toolLock, ok := lf.Tools[toolName]
+		if !ok {
 			return fmt.Errorf("%s is not in your clinic workspace", toolName)
 		}
 
-		// Remove skill file
+		// Uninstall the binary unless --keep-binary is set
+		if !keepBinary {
+			reg := registry.Load()
+			if tool, found := reg.GetTool(toolName); found {
+				if err := installer.Uninstall(tool, toolLock.InstalledVia); err != nil {
+					fmt.Printf("⚠ Could not uninstall binary: %s\n", err)
+				} else {
+					fmt.Printf("✓ Uninstalled %s (was installed via %s)\n", toolName, toolLock.InstalledVia)
+				}
+			}
+		}
+
+		// Remove skill files
 		if err := skills.Remove(toolName); err != nil {
 			fmt.Printf("⚠ Could not remove skill: %s\n", err)
 		} else {
@@ -38,8 +55,10 @@ var removeCmd = &cobra.Command{
 		}
 
 		fmt.Printf("✓ Removed %s from clinic workspace\n", toolName)
-		fmt.Printf("\nNote: The CLI binary itself was not uninstalled.\n")
-		fmt.Printf("To uninstall it, run the appropriate command for your package manager.\n")
 		return nil
 	},
+}
+
+func init() {
+	removeCmd.Flags().BoolVar(&keepBinary, "keep-binary", false, "Only remove from workspace, don't uninstall the CLI binary")
 }
