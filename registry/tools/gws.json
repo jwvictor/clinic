@@ -1,0 +1,36 @@
+{
+  "name": "gws",
+  "command": "gws",
+  "description": "Google Workspace CLI — Gmail, Drive, Calendar, Docs, Sheets",
+  "language": "rust",
+  "category": "cloud",
+  "version_command": "gws --version",
+  "version_pattern": "gws (\\S+)",
+  "install_methods": [
+    {
+      "type": "npm",
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "package": "@googleworkspace/cli",
+      "global": true
+    },
+    {
+      "type": "binary",
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "url_template": "https://github.com/googleworkspace/cli/releases/latest"
+    }
+  ],
+  "auth": {
+    "inject_type": "file",
+    "env_var": "GOOGLE_WORKSPACE_CLI_CREDENTIALS_FILE",
+    "auth_check": "gws auth status",
+    "auth_command": "gws auth login"
+  },
+  "skill_template": "",
+  "skills_source": "googleworkspace/cli"
+}

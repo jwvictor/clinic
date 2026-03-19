@@ -1,0 +1,31 @@
+{
+  "name": "helm",
+  "command": "helm",
+  "description": "Helm — Kubernetes package manager for charts",
+  "language": "go",
+  "category": "k8s",
+  "version_command": "helm version --short",
+  "version_pattern": "v(\\S+)",
+  "install_methods": [
+    {
+      "type": "brew",
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "formula": "helm"
+    },
+    {
+      "type": "curl_script",
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "script_url": "https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3"
+    }
+  ],
+  "auth": {
+    "inject_type": "none"
+  },
+  "skill_template": ""
+}

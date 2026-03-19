@@ -1,0 +1,28 @@
+{
+  "name": "wrangler",
+  "command": "wrangler",
+  "description": "Cloudflare Workers CLI — deploy Workers, manage KV, R2, D1",
+  "language": "node",
+  "category": "deploy",
+  "version_command": "wrangler --version",
+  "version_pattern": "wrangler (\\S+)",
+  "install_methods": [
+    {
+      "type": "npm",
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "package": "wrangler",
+      "global": true,
+      "requires": "node \u003e= 18"
+    }
+  ],
+  "auth": {
+    "inject_type": "env",
+    "env_var": "CLOUDFLARE_API_TOKEN",
+    "auth_check": "wrangler whoami",
+    "auth_command": "wrangler login"
+  },
+  "skill_template": ""
+}

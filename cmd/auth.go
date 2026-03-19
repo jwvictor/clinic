@@ -95,13 +95,15 @@ func runAuth(toolName string) error {
 		authCommand = tool.Auth.AuthCmdHeadless
 		fmt.Printf("Authenticating %s (headless mode)...\n", toolName)
 		fmt.Println("A URL will be displayed — open it on any device with a browser.\n")
-	} else if headless && tool.Auth.AuthCmdHeadless == "" {
-		fmt.Printf("Authenticating %s...\n", toolName)
+	} else if headless {
+		// Headless requested but no headless auth flow available — don't fall
+		// through to the browser-based command.
 		fmt.Printf("⚠ No headless auth flow available for %s.\n", toolName)
-		fmt.Printf("  You can set the %s env var directly instead.\n\n", tool.Auth.EnvVar)
 		if tool.Auth.EnvVar != "" {
-			return nil
+			fmt.Printf("  Set the %s environment variable directly instead:\n\n", tool.Auth.EnvVar)
+			fmt.Printf("    export %s=\"your-token-here\"\n\n", tool.Auth.EnvVar)
 		}
+		return nil
 	} else {
 		fmt.Printf("Authenticating %s...\n\n", toolName)
 	}
@@ -124,15 +126,34 @@ func runAuth(toolName string) error {
 // detectHeadless returns true if we're likely in a headless environment
 // (no browser available).
 func detectHeadless() bool {
-	// No DISPLAY on Linux = no GUI
+	// SSH session — no local browser
+	if os.Getenv("SSH_CONNECTION") != "" || os.Getenv("SSH_TTY") != "" {
+		return true
+	}
+
+	// CI environments
+	if os.Getenv("CI") != "" {
+		return true
+	}
+
+	// Docker / container (/.dockerenv or /run/.containerenv)
+	if _, err := os.Stat("/.dockerenv"); err == nil {
+		return true
+	}
+	if _, err := os.Stat("/run/.containerenv"); err == nil {
+		return true
+	}
+
+	// No display server on Linux
 	if os.Getenv("DISPLAY") == "" && os.Getenv("WAYLAND_DISPLAY") == "" {
-		// But on macOS there's always a GUI, so check the OS
-		// If we're in Docker or SSH, DISPLAY is typically unset
+		// On macOS, `open` always exists even with a GUI, so only flag
+		// headless if neither xdg-open nor open can be found.
 		if _, err := exec.LookPath("xdg-open"); err != nil {
 			if _, err := exec.LookPath("open"); err != nil {
 				return true
 			}
 		}
 	}
+
 	return false
 }

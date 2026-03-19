@@ -1,0 +1,29 @@
+{
+  "name": "late",
+  "command": "late",
+  "description": "Late (Zernio) — post to 13+ social platforms from one CLI",
+  "language": "node",
+  "category": "social",
+  "version_command": "late --version",
+  "version_pattern": "(\\S+)",
+  "install_methods": [
+    {
+      "type": "npm",
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "package": "zernio",
+      "global": true
+    }
+  ],
+  "auth": {
+    "inject_type": "env",
+    "env_var": "LATE_API_KEY",
+    "auth_check": "late auth status",
+    "auth_command": "late auth login"
+  },
+  "skill_template": "",
+  "skills_source": "zernio-dev/zernio-cli",
+  "skills_subdir": "."
+}

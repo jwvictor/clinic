@@ -1,0 +1,34 @@
+{
+  "name": "pulumi",
+  "command": "pulumi",
+  "description": "Pulumi — Infrastructure as Code using real programming languages",
+  "language": "go",
+  "category": "iac",
+  "version_command": "pulumi version",
+  "version_pattern": "v(\\S+)",
+  "install_methods": [
+    {
+      "type": "brew",
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "formula": "pulumi"
+    },
+    {
+      "type": "curl_script",
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "script_url": "https://get.pulumi.com"
+    }
+  ],
+  "auth": {
+    "inject_type": "env",
+    "env_var": "PULUMI_ACCESS_TOKEN",
+    "auth_check": "pulumi whoami",
+    "auth_command": "pulumi login"
+  },
+  "skill_template": ""
+}

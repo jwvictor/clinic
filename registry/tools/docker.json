@@ -1,0 +1,30 @@
+{
+  "name": "docker",
+  "command": "docker",
+  "description": "Docker CLI — build, run, and manage containers and images",
+  "language": "go",
+  "category": "utility",
+  "version_command": "docker --version",
+  "version_pattern": "Docker version (\\S+),",
+  "install_methods": [
+    {
+      "type": "brew",
+      "platforms": [
+        "macos"
+      ],
+      "formula": "docker"
+    },
+    {
+      "type": "curl_script",
+      "platforms": [
+        "linux"
+      ],
+      "script_url": "https://get.docker.com"
+    }
+  ],
+  "auth": {
+    "inject_type": "none",
+    "auth_check": "docker info"
+  },
+  "skill_template": ""
+}

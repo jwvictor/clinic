@@ -1,0 +1,34 @@
+{
+  "name": "stripe",
+  "command": "stripe",
+  "description": "Stripe CLI — payments, subscriptions, webhook testing",
+  "language": "go",
+  "category": "payments",
+  "version_command": "stripe --version",
+  "version_pattern": "stripe (\\S+)",
+  "install_methods": [
+    {
+      "type": "brew",
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "formula": "stripe/stripe-cli/stripe"
+    },
+    {
+      "type": "binary",
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "url_template": "https://github.com/stripe/stripe-cli/releases/latest"
+    }
+  ],
+  "auth": {
+    "inject_type": "env",
+    "env_var": "STRIPE_API_KEY",
+    "auth_check": "stripe config --list",
+    "auth_command": "stripe login"
+  },
+  "skill_template": ""
+}

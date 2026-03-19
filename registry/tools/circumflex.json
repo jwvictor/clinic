@@ -1,0 +1,23 @@
+{
+  "name": "circumflex",
+  "command": "clx",
+  "description": "Hacker News in the terminal — browse, read, comment",
+  "language": "go",
+  "category": "news",
+  "version_command": "clx --version",
+  "version_pattern": "(\\S+)",
+  "install_methods": [
+    {
+      "type": "brew",
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "formula": "circumflex"
+    }
+  ],
+  "auth": {
+    "inject_type": "none"
+  },
+  "skill_template": ""
+}

@@ -1,0 +1,35 @@
+{
+  "name": "doctl",
+  "command": "doctl",
+  "description": "DigitalOcean CLI — Droplets, App Platform, databases, networking",
+  "language": "go",
+  "category": "cloud",
+  "version_command": "doctl version",
+  "version_pattern": "doctl version (\\S+)",
+  "install_methods": [
+    {
+      "type": "brew",
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "formula": "doctl"
+    },
+    {
+      "type": "binary",
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "url_template": "https://github.com/digitalocean/doctl/releases/latest"
+    }
+  ],
+  "auth": {
+    "inject_type": "env",
+    "env_var": "DIGITALOCEAN_ACCESS_TOKEN",
+    "auth_check": "doctl account get",
+    "auth_command": "doctl auth init"
+  },
+  "skill_template": "",
+  "skills_source": "digitalocean-labs/do-app-platform-skills"
+}

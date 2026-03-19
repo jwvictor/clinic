@@ -1,0 +1,33 @@
+{
+  "name": "kubectl",
+  "command": "kubectl",
+  "description": "Kubernetes CLI — manage pods, services, deployments, config",
+  "language": "go",
+  "category": "k8s",
+  "version_command": "kubectl version --client -o json",
+  "version_pattern": "\"gitVersion\":\\s*\"v([^\"]+)\"",
+  "install_methods": [
+    {
+      "type": "brew",
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "formula": "kubectl"
+    },
+    {
+      "type": "binary",
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "url_template": "https://dl.k8s.io/release/stable.txt"
+    }
+  ],
+  "auth": {
+    "inject_type": "file",
+    "auth_check": "kubectl cluster-info",
+    "auth_command": "kubectl config set-cluster"
+  },
+  "skill_template": ""
+}

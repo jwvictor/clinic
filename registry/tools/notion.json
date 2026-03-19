@@ -1,0 +1,27 @@
+{
+  "name": "notion",
+  "command": "notion-cli",
+  "description": "Notion CLI — manage pages, databases, blocks, comments, users",
+  "language": "go",
+  "category": "productivity",
+  "version_command": "notion-cli --version",
+  "version_pattern": "(\\S+)",
+  "install_methods": [
+    {
+      "type": "brew",
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "formula": "4ier/tap/notion-cli"
+    }
+  ],
+  "auth": {
+    "inject_type": "env",
+    "env_var": "NOTION_API_KEY",
+    "auth_check": "notion-cli users list",
+    "auth_command": "notion-cli auth login"
+  },
+  "skill_template": "",
+  "skills_source": "4ier/notion-cli"
+}

@@ -1,0 +1,27 @@
+{
+  "name": "az",
+  "command": "az",
+  "description": "Azure CLI — VMs, App Service, AKS, SQL, Storage",
+  "language": "python",
+  "category": "cloud",
+  "version_command": "az --version",
+  "version_pattern": "azure-cli\\s+(\\S+)",
+  "install_methods": [
+    {
+      "type": "brew",
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "formula": "azure-cli"
+    }
+  ],
+  "auth": {
+    "inject_type": "env",
+    "env_var": "ARM_CLIENT_ID",
+    "auth_check": "az account show",
+    "auth_command": "az login",
+    "auth_command_headless": "az login --use-device-code"
+  },
+  "skill_template": ""
+}

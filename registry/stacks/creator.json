@@ -1,0 +1,14 @@
+{
+  "name": "creator",
+  "description": "Content creator and social media toolkit",
+  "tools": [
+    "x-cli",
+    "late",
+    "yt-dlp",
+    "ticker",
+    "circumflex",
+    "notion",
+    "slack",
+    "discordo"
+  ]
+}

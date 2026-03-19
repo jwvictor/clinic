@@ -1,0 +1,30 @@
+{
+  "name": "vercel",
+  "command": "vercel",
+  "description": "Vercel CLI — deploy frontend apps, manage domains, env vars",
+  "language": "node",
+  "category": "deploy",
+  "version_command": "vercel --version",
+  "version_pattern": "Vercel CLI (\\S+)",
+  "install_methods": [
+    {
+      "type": "npm",
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "package": "vercel",
+      "global": true,
+      "requires": "node \u003e= 18"
+    }
+  ],
+  "auth": {
+    "inject_type": "env",
+    "env_var": "VERCEL_TOKEN",
+    "auth_check": "vercel whoami",
+    "auth_command": "vercel login"
+  },
+  "skill_template": "",
+  "skills_source": "vercel/vercel",
+  "skills_subdir": "skills"
+}

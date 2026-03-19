@@ -1,0 +1,15 @@
+{
+  "name": "saas-founder",
+  "description": "Full-stack SaaS founder toolkit",
+  "tools": [
+    "gh",
+    "vercel",
+    "stripe",
+    "supabase",
+    "firebase",
+    "sentry-cli",
+    "gws",
+    "jq",
+    "ngrok"
+  ]
+}

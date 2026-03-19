@@ -1,0 +1,43 @@
+{
+  "name": "railway",
+  "command": "railway",
+  "description": "Railway CLI — deploy apps, manage databases, env vars",
+  "language": "rust",
+  "category": "deploy",
+  "version_command": "railway --version",
+  "version_pattern": "railway (\\S+)",
+  "install_methods": [
+    {
+      "type": "brew",
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "formula": "railway"
+    },
+    {
+      "type": "npm",
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "package": "@railway/cli",
+      "global": true
+    },
+    {
+      "type": "curl_script",
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "script_url": "https://cli.new"
+    }
+  ],
+  "auth": {
+    "inject_type": "env",
+    "env_var": "RAILWAY_TOKEN",
+    "auth_check": "railway whoami",
+    "auth_command": "railway login"
+  },
+  "skill_template": ""
+}

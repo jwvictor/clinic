@@ -1,0 +1,26 @@
+{
+  "name": "x-cli",
+  "command": "x",
+  "description": "X (Twitter) CLI — post, search, read timeline, manage account",
+  "language": "rust",
+  "category": "social",
+  "version_command": "x --version",
+  "version_pattern": "x-cli (\\S+)",
+  "install_methods": [
+    {
+      "type": "brew",
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "formula": "x-cli"
+    }
+  ],
+  "auth": {
+    "inject_type": "env",
+    "env_var": "X_API_KEY",
+    "auth_check": "x auth status",
+    "auth_command": "x auth login"
+  },
+  "skill_template": ""
+}

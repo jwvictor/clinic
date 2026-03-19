@@ -1,0 +1,36 @@
+{
+  "name": "firebase",
+  "command": "firebase",
+  "description": "Firebase CLI — auth, Firestore, hosting, functions, emulators",
+  "language": "node",
+  "category": "backend",
+  "version_command": "firebase --version",
+  "version_pattern": "(\\S+)",
+  "install_methods": [
+    {
+      "type": "npm",
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "package": "firebase-tools",
+      "global": true
+    },
+    {
+      "type": "curl_script",
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "script_url": "https://firebase.tools"
+    }
+  ],
+  "auth": {
+    "inject_type": "file",
+    "env_var": "GOOGLE_APPLICATION_CREDENTIALS",
+    "auth_check": "firebase login --list",
+    "auth_command": "firebase login",
+    "auth_command_headless": "firebase login --no-localhost"
+  },
+  "skill_template": ""
+}

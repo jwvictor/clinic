@@ -1,0 +1,34 @@
+{
+  "name": "netlify",
+  "command": "netlify",
+  "description": "Netlify CLI — deploy sites, manage forms, functions, identity",
+  "language": "node",
+  "category": "deploy",
+  "version_command": "netlify --version",
+  "version_pattern": "netlify-cli/(\\S+)",
+  "install_methods": [
+    {
+      "type": "npm",
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "package": "netlify-cli",
+      "global": true
+    },
+    {
+      "type": "brew",
+      "platforms": [
+        "macos"
+      ],
+      "formula": "netlify-cli"
+    }
+  ],
+  "auth": {
+    "inject_type": "env",
+    "env_var": "NETLIFY_AUTH_TOKEN",
+    "auth_check": "netlify status",
+    "auth_command": "netlify login"
+  },
+  "skill_template": ""
+}

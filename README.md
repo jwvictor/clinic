@@ -23,36 +23,23 @@ But setting up 5-10 CLI tools means:
 
 Clinic handles all of it.
 
-## Install
-
-```bash
-# From source
-go install github.com/jwvictor/clinic@latest
-
-# Or clone and build
-git clone https://github.com/jwvictor/clinic.git
-cd clinic
-go build -o clinic .
-```
-
 ## Quick Start
 
 ```bash
-# See available stacks
-clinic stacks
+curl -fsSL https://getclinic.sh/install | sh
+```
 
-# Set up a full stack
-clinic init --stack indie-hacker
+Then pick a stack and go:
 
-# Or add tools one at a time
+```bash
+clinic init --stack saas-founder
+```
+
+Or add tools one at a time:
+
+```bash
 clinic add gh
 clinic add stripe
-
-# Authenticate (auto-detects headless environments)
-clinic auth gh
-
-# Check everything is healthy
-clinic doctor
 ```
 
 ## What It Does
@@ -83,46 +70,16 @@ stripe           1.25.0       ✗ no       ✓        ⚠ auth needed
 jq               1.8.1        n/a        ✓        ✓ ok
 ```
 
-## Supported Tools (23)
+## Supported Tools & Stacks
 
-### Cloud Providers
-`gh` · `gws` · `gcloud` · `aws` · `az` · `doctl`
+Browse all available tools and curated stacks at [getclinic.sh/tools](https://getclinic.sh/tools).
 
-### Deployment Platforms
-`vercel` · `netlify` · `fly` · `railway` · `wrangler`
+Or from the CLI:
 
-### Infrastructure as Code
-`terraform` · `pulumi`
-
-### Kubernetes
-`kubectl` · `helm`
-
-### Payments
-`stripe`
-
-### Observability
-`sentry-cli`
-
-### Backend
-`firebase` · `supabase`
-
-### Utilities
-`jq` · `docker` · `ngrok`
-
-### Secrets
-`vault`
-
-## Stacks
-
-Opinionated bundles for common workflows:
-
-| Stack | Tools | For |
-|-------|-------|-----|
-| `saas-founder` | gh, vercel, stripe, supabase, firebase, sentry-cli, gws, jq, ngrok | Solo founders shipping SaaS |
-| `devops` | aws, gcloud, az, terraform, kubectl, helm, docker, vault, gh, sentry-cli, jq | Platform/DevOps engineers |
-| `indie-hacker` | gh, fly, railway, stripe, supabase, wrangler, sentry-cli, jq, ngrok | Ship fast, modern platforms |
-| `frontend` | gh, vercel, netlify, wrangler, firebase, sentry-cli, jq | Frontend developers |
-| `gcp-stack` | gcloud, gws, firebase, kubectl, helm, docker, gh, terraform, jq | Google Cloud focused |
+```bash
+clinic list --all    # See all available tools
+clinic stacks        # See available stacks
+```
 
 ## Commands
 

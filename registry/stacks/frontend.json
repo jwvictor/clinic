@@ -1,0 +1,13 @@
+{
+  "name": "frontend",
+  "description": "Frontend developer deploying to edge platforms",
+  "tools": [
+    "gh",
+    "vercel",
+    "netlify",
+    "wrangler",
+    "firebase",
+    "sentry-cli",
+    "jq"
+  ]
+}

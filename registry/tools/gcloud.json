@@ -1,0 +1,27 @@
+{
+  "name": "gcloud",
+  "command": "gcloud",
+  "description": "Google Cloud CLI — Compute, Cloud Run, GKE, BigQuery, IAM",
+  "language": "python",
+  "category": "cloud",
+  "version_command": "gcloud version",
+  "version_pattern": "Google Cloud SDK (\\S+)",
+  "install_methods": [
+    {
+      "type": "brew",
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "formula": "google-cloud-sdk"
+    }
+  ],
+  "auth": {
+    "inject_type": "file",
+    "env_var": "GOOGLE_APPLICATION_CREDENTIALS",
+    "auth_check": "gcloud auth list --filter=status:ACTIVE --format=value(account)",
+    "auth_command": "gcloud auth login",
+    "auth_command_headless": "gcloud auth login --no-browser"
+  },
+  "skill_template": ""
+}

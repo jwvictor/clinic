@@ -1,0 +1,34 @@
+{
+  "name": "vault",
+  "command": "vault",
+  "description": "HashiCorp Vault — secrets management, encryption as a service",
+  "language": "go",
+  "category": "secrets",
+  "version_command": "vault version",
+  "version_pattern": "Vault v(\\S+)",
+  "install_methods": [
+    {
+      "type": "brew",
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "formula": "hashicorp/tap/vault"
+    },
+    {
+      "type": "binary",
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "url_template": "https://releases.hashicorp.com/vault/"
+    }
+  ],
+  "auth": {
+    "inject_type": "env",
+    "env_var": "VAULT_TOKEN",
+    "auth_check": "vault token lookup",
+    "auth_command": "vault login"
+  },
+  "skill_template": ""
+}

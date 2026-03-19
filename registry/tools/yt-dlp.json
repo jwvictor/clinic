@@ -1,0 +1,23 @@
+{
+  "name": "yt-dlp",
+  "command": "yt-dlp",
+  "description": "Download video/audio from YouTube and 1000+ sites",
+  "language": "python",
+  "category": "media",
+  "version_command": "yt-dlp --version",
+  "version_pattern": "(\\S+)",
+  "install_methods": [
+    {
+      "type": "brew",
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "formula": "yt-dlp"
+    }
+  ],
+  "auth": {
+    "inject_type": "none"
+  },
+  "skill_template": ""
+}

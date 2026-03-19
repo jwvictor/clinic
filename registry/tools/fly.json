@@ -1,0 +1,35 @@
+{
+  "name": "fly",
+  "command": "fly",
+  "description": "Fly.io CLI — deploy apps globally, manage volumes, secrets",
+  "language": "go",
+  "category": "deploy",
+  "version_command": "fly version",
+  "version_pattern": "v(\\S+)",
+  "install_methods": [
+    {
+      "type": "brew",
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "formula": "flyctl"
+    },
+    {
+      "type": "curl_script",
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "script_url": "https://fly.io/install.sh"
+    }
+  ],
+  "auth": {
+    "inject_type": "env",
+    "env_var": "FLY_ACCESS_TOKEN",
+    "auth_check": "fly auth whoami",
+    "auth_command": "fly auth login",
+    "auth_command_headless": "fly auth login --interactive"
+  },
+  "skill_template": ""
+}

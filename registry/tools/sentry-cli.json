@@ -1,0 +1,35 @@
+{
+  "name": "sentry-cli",
+  "command": "sentry-cli",
+  "description": "Sentry CLI — release management, source map upload",
+  "language": "rust",
+  "category": "observability",
+  "version_command": "sentry-cli --version",
+  "version_pattern": "sentry-cli (\\S+)",
+  "install_methods": [
+    {
+      "type": "brew",
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "formula": "getsentry/tools/sentry-cli"
+    },
+    {
+      "type": "npm",
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "package": "@sentry/cli",
+      "global": true
+    }
+  ],
+  "auth": {
+    "inject_type": "env",
+    "env_var": "SENTRY_AUTH_TOKEN",
+    "auth_check": "sentry-cli info",
+    "auth_command": "sentry-cli login"
+  },
+  "skill_template": ""
+}

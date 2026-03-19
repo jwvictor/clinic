@@ -1,0 +1,34 @@
+{
+  "name": "supabase",
+  "command": "supabase",
+  "description": "Supabase CLI — local dev, migrations, edge functions",
+  "language": "go",
+  "category": "backend",
+  "version_command": "supabase --version",
+  "version_pattern": "(\\S+)",
+  "install_methods": [
+    {
+      "type": "brew",
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "formula": "supabase/tap/supabase"
+    },
+    {
+      "type": "binary",
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "url_template": "https://github.com/supabase/cli/releases/latest"
+    }
+  ],
+  "auth": {
+    "inject_type": "env",
+    "env_var": "SUPABASE_ACCESS_TOKEN",
+    "auth_check": "supabase projects list",
+    "auth_command": "supabase login"
+  },
+  "skill_template": ""
+}

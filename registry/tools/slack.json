@@ -1,0 +1,33 @@
+{
+  "name": "slack",
+  "command": "slack",
+  "description": "Slack CLI — create and manage Slack apps and workflows",
+  "language": "go",
+  "category": "productivity",
+  "version_command": "slack --version",
+  "version_pattern": "(\\S+)",
+  "install_methods": [
+    {
+      "type": "brew",
+      "platforms": [
+        "macos"
+      ],
+      "formula": "slack-cli"
+    },
+    {
+      "type": "curl_script",
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "script_url": "https://downloads.slack-edge.com/slack-cli/install.sh"
+    }
+  ],
+  "auth": {
+    "inject_type": "env",
+    "env_var": "SLACK_TOKEN",
+    "auth_check": "slack auth info",
+    "auth_command": "slack login"
+  },
+  "skill_template": ""
+}

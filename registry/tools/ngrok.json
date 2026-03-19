@@ -1,0 +1,26 @@
+{
+  "name": "ngrok",
+  "command": "ngrok",
+  "description": "Expose local servers to the internet via secure tunnels",
+  "language": "go",
+  "category": "utility",
+  "version_command": "ngrok --version",
+  "version_pattern": "ngrok version (\\S+)",
+  "install_methods": [
+    {
+      "type": "brew",
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "formula": "ngrok/ngrok/ngrok"
+    }
+  ],
+  "auth": {
+    "inject_type": "env",
+    "env_var": "NGROK_AUTHTOKEN",
+    "auth_check": "ngrok config check",
+    "auth_command": "ngrok config add-authtoken"
+  },
+  "skill_template": ""
+}

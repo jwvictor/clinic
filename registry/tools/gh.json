@@ -1,0 +1,35 @@
+{
+  "name": "gh",
+  "command": "gh",
+  "description": "GitHub CLI — repos, issues, PRs, Actions, releases",
+  "language": "go",
+  "category": "cloud",
+  "version_command": "gh --version",
+  "version_pattern": "gh version (\\S+)",
+  "install_methods": [
+    {
+      "type": "brew",
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "formula": "gh"
+    },
+    {
+      "type": "binary",
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "url_template": "https://github.com/cli/cli/releases/latest/download/gh_{{.Version}}_{{.OS}}_{{.Arch}}.tar.gz"
+    }
+  ],
+  "auth": {
+    "inject_type": "env",
+    "env_var": "GH_TOKEN",
+    "auth_check": "gh auth status",
+    "auth_command": "gh auth login",
+    "auth_command_headless": "gh auth login --web"
+  },
+  "skill_template": ""
+}
