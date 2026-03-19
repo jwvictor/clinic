@@ -69,9 +69,9 @@ type ToolLock struct {
 	InstalledVia string `json:"installed_via"`
 }
 
-// LockfilePath returns the path to clinic.json in the current directory.
+// LockfilePath returns the path to ~/.clinic/clinic.json.
 func LockfilePath() string {
-	return "clinic.json"
+	return filepath.Join(ClinicHome(), "clinic.json")
 }
 
 // LoadLockfile reads the lockfile from the current directory.

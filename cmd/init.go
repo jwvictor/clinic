@@ -106,7 +106,7 @@ var initCmd = &cobra.Command{
 			return fmt.Errorf("saving lockfile: %w", err)
 		}
 
-		fmt.Printf("Wrote %s (commit this to your repo)\n\n", config.LockfilePath())
+		fmt.Printf("Wrote %s\n\n", config.LockfilePath())
 		fmt.Println("Your workspace is agent-ready. 🤝")
 		return nil
 	},

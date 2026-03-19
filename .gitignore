@@ -9,5 +9,3 @@ clinic
 .vscode/
 *.swp
 
-# Test artifacts
-clinic.json
