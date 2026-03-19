@@ -13,10 +13,19 @@ import (
 )
 
 var authStatus bool
+var authHeadless bool
 
 var authCmd = &cobra.Command{
 	Use:   "auth [tool]",
 	Short: "Authenticate a CLI tool or check auth status",
+	Long: `Authenticate a CLI tool interactively.
+
+Use --headless when you don't have a browser on this machine (e.g., Docker,
+SSH, CI). The tool will print a URL and code — visit it on your phone or
+laptop to complete auth.
+
+Headless mode is auto-detected when the DISPLAY env var is unset and
+the system has no browser.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if authStatus || len(args) == 0 {
 			return showAuthStatus()
@@ -27,6 +36,7 @@ var authCmd = &cobra.Command{
 
 func init() {
 	authCmd.Flags().BoolVar(&authStatus, "status", false, "Show auth status for all tools")
+	authCmd.Flags().BoolVar(&authHeadless, "headless", false, "Use device-code / no-browser auth flow")
 }
 
 func showAuthStatus() error {
@@ -50,7 +60,7 @@ func showAuthStatus() error {
 		if !ok {
 			continue
 		}
-		if tool.Auth.InjectType == "none" {
+		if tool.Auth.InjectType == "" || tool.Auth.InjectType == "none" {
 			fmt.Printf("%-16s %-10s %s\n", toolName, "n/a", "no auth needed")
 			continue
 		}
@@ -59,7 +69,7 @@ func showAuthStatus() error {
 		if health.AuthOK {
 			fmt.Printf("%-16s %-10s %s\n", toolName, "✓ ok", health.AuthUser)
 		} else {
-			fmt.Printf("%-16s %-10s run: %s\n", toolName, "✗ no", tool.Auth.AuthCmd)
+			fmt.Printf("%-16s %-10s run: clinic auth %s\n", toolName, "✗ no", toolName)
 		}
 	}
 	return nil
@@ -72,15 +82,32 @@ func runAuth(toolName string) error {
 		return fmt.Errorf("unknown tool: %s", toolName)
 	}
 
-	if tool.Auth.InjectType == "none" {
+	if tool.Auth.InjectType == "" || tool.Auth.InjectType == "none" {
 		fmt.Printf("%s does not require authentication.\n", toolName)
 		return nil
 	}
 
-	fmt.Printf("Authenticating %s...\n\n", toolName)
+	// Determine which auth command to use
+	headless := authHeadless || detectHeadless()
+	authCommand := tool.Auth.AuthCmd
 
-	// Run the tool's native auth command interactively
-	parts := strings.Fields(tool.Auth.AuthCmd)
+	if headless && tool.Auth.AuthCmdHeadless != "" {
+		authCommand = tool.Auth.AuthCmdHeadless
+		fmt.Printf("Authenticating %s (headless mode)...\n", toolName)
+		fmt.Println("A URL will be displayed — open it on any device with a browser.\n")
+	} else if headless && tool.Auth.AuthCmdHeadless == "" {
+		fmt.Printf("Authenticating %s...\n", toolName)
+		fmt.Printf("⚠ No headless auth flow available for %s.\n", toolName)
+		fmt.Printf("  You can set the %s env var directly instead.\n\n", tool.Auth.EnvVar)
+		if tool.Auth.EnvVar != "" {
+			return nil
+		}
+	} else {
+		fmt.Printf("Authenticating %s...\n\n", toolName)
+	}
+
+	// Run the auth command interactively
+	parts := strings.Fields(authCommand)
 	c := exec.Command(parts[0], parts[1:]...)
 	c.Stdin = os.Stdin
 	c.Stdout = os.Stdout
@@ -92,4 +119,20 @@ func runAuth(toolName string) error {
 
 	fmt.Printf("\n✓ %s authenticated\n", toolName)
 	return nil
+}
+
+// detectHeadless returns true if we're likely in a headless environment
+// (no browser available).
+func detectHeadless() bool {
+	// No DISPLAY on Linux = no GUI
+	if os.Getenv("DISPLAY") == "" && os.Getenv("WAYLAND_DISPLAY") == "" {
+		// But on macOS there's always a GUI, so check the OS
+		// If we're in Docker or SSH, DISPLAY is typically unset
+		if _, err := exec.LookPath("xdg-open"); err != nil {
+			if _, err := exec.LookPath("open"); err != nil {
+				return true
+			}
+		}
+	}
+	return false
 }

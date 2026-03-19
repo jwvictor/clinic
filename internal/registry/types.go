@@ -29,10 +29,11 @@ type InstallMethod struct {
 
 // AuthDef defines how to authenticate a tool.
 type AuthDef struct {
-	InjectType string `json:"inject_type"` // env, file, none
-	EnvVar     string `json:"env_var,omitempty"`
-	AuthCheck  string `json:"auth_check,omitempty"`   // command to check if authed
-	AuthCmd    string `json:"auth_command,omitempty"`  // command to authenticate
+	InjectType     string `json:"inject_type"`                // env, file, none
+	EnvVar         string `json:"env_var,omitempty"`
+	AuthCheck      string `json:"auth_check,omitempty"`       // command to check if authed
+	AuthCmd        string `json:"auth_command,omitempty"`      // command to authenticate (interactive/browser)
+	AuthCmdHeadless string `json:"auth_command_headless,omitempty"` // command to authenticate (no browser, device-code flow)
 }
 
 // StackDef defines a curated bundle of tools.
