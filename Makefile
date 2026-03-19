@@ -23,6 +23,12 @@ test-smoke:
 		echo "=== stacks ===" && clinic stacks && \
 		echo "=== list --all ===" && clinic list --all'
 
+# Test registry — install every tool, verify version commands and auth commands
+# Usage: make test-registry
+#        make test-registry TOOLS="gh stripe jq"
+test-registry:
+	docker run --rm clinic-test /build/scripts/test-registry.sh $(TOOLS)
+
 # Clean up test images
 test-clean:
 	docker rmi clinic-test 2>/dev/null || true

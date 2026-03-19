@@ -31,7 +31,8 @@ WORKDIR /build
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
-RUN go build -o /usr/local/bin/clinic .
+RUN go build -o /usr/local/bin/clinic . \
+    && chmod +x scripts/*.sh
 
 # Switch to test user
 USER tester
