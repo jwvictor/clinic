@@ -96,14 +96,13 @@ func runAuth(toolName string) error {
 		fmt.Printf("Authenticating %s (headless mode)...\n", toolName)
 		fmt.Println("A URL will be displayed — open it on any device with a browser.\n")
 	} else if headless {
-		// Headless requested but no headless auth flow available — don't fall
-		// through to the browser-based command.
-		fmt.Printf("⚠ No headless auth flow available for %s.\n", toolName)
+		fmt.Printf("Authenticating %s...\n", toolName)
+		fmt.Printf("⚠ No specific headless auth flow known for %s — trying default auth.\n", toolName)
 		if tool.Auth.EnvVar != "" {
-			fmt.Printf("  Set the %s environment variable directly instead:\n\n", tool.Auth.EnvVar)
-			fmt.Printf("    export %s=\"your-token-here\"\n\n", tool.Auth.EnvVar)
+			fmt.Printf("  Tip: you can also set %s directly.\n\n", tool.Auth.EnvVar)
+		} else {
+			fmt.Println()
 		}
-		return nil
 	} else {
 		fmt.Printf("Authenticating %s...\n\n", toolName)
 	}
