@@ -263,6 +263,190 @@ If auth fails, run ` + "`clinic auth supabase`" + ` or ` + "`clinic doctor`" + `
 {{- end}}
 `,
 
+	"x-cli": `---
+name: x-twitter
+description: >
+  Use when the user needs to interact with X (Twitter) — post tweets, search,
+  read timeline, manage account. The x CLI is installed and authenticated.
+allowed-tools: Bash(x:*)
+---
+
+You have the ` + "`x`" + ` CLI (v{{.Version}}) installed{{if .AuthUser}} and authenticated{{end}}.
+
+## Key commands
+- ` + "`x post \"your tweet text\"`" + ` — post a tweet
+- ` + "`x search \"query\"`" + ` — search tweets
+- ` + "`x timeline`" + ` — view your home timeline
+- ` + "`x replies`" + ` — view replies to your tweets
+- ` + "`x user <handle>`" + ` — view a user's profile
+- ` + "`x delete <tweet-id>`" + ` — delete a tweet
+
+## Conventions
+- Keep tweets under 280 characters
+- Use ` + "`--json`" + ` for structured output when parsing results
+- NEVER post without explicit user confirmation of the tweet content
+- NEVER delete tweets without user confirmation
+{{- if .NeedsAuth}}
+
+## Auth
+Managed by Clinic. API key injected via ` + "`X_API_KEY`" + ` env var.
+If auth fails, run ` + "`clinic auth x-cli`" + ` or ` + "`clinic doctor`" + `.
+{{- end}}
+`,
+
+	// "late" uses vendor skills from zernio-dev/zernio-cli
+
+	"discordo": `---
+name: discord
+description: >
+  Use when the user needs to interact with Discord from the terminal — browse
+  servers, read channels, send messages. Discordo is a lightweight Discord TUI.
+allowed-tools: Bash(discordo:*)
+---
+
+You have ` + "`discordo`" + ` (v{{.Version}}) installed{{if .AuthUser}} and authenticated{{end}}.
+
+## Key commands
+- ` + "`discordo`" + ` — launch the interactive TUI
+- Navigate with vim-style keybindings (j/k to move, Enter to select)
+- Ctrl+N to switch servers, Ctrl+L to switch channels
+- Type and press Enter to send messages
+
+## Conventions
+- Discordo is primarily an interactive TUI — it's best launched for the user to interact with directly
+- NEVER send messages to Discord channels without explicit user confirmation
+- Be aware that Discord tokens should never be logged or displayed
+{{- if .NeedsAuth}}
+
+## Auth
+Managed by Clinic. Token injected via ` + "`DISCORD_TOKEN`" + ` env var.
+If auth fails, run ` + "`clinic auth discordo`" + ` or ` + "`clinic doctor`" + `.
+{{- end}}
+`,
+
+	// "notion" uses vendor skills from 4ier/notion-cli
+
+	"slack": `---
+name: slack
+description: >
+  Use when the user needs to interact with Slack — create apps, manage
+  workflows, deploy functions. The official Slack CLI is installed.
+allowed-tools: Bash(slack:*)
+---
+
+You have the ` + "`slack`" + ` CLI (v{{.Version}}) installed{{if .AuthUser}} and authenticated{{end}}.
+
+## Key commands
+- ` + "`slack create <app-name>`" + ` — create a new Slack app
+- ` + "`slack deploy`" + ` — deploy app to Slack
+- ` + "`slack run`" + ` — run app locally in development mode
+- ` + "`slack trigger create`" + ` — create a workflow trigger
+- ` + "`slack function list`" + ` — list app functions
+- ` + "`slack auth info`" + ` — show current auth status
+- ` + "`slack feedback`" + ` — send feedback to Slack
+
+## Conventions
+- Use ` + "`slack run`" + ` for local development, ` + "`slack deploy`" + ` for production
+- Slack apps use the Deno runtime for functions
+- ` + "`manifest.json`" + ` or ` + "`manifest.ts`" + ` in the project root defines app configuration
+- Use ` + "`slack trigger`" + ` to create entry points for workflows
+{{- if .NeedsAuth}}
+
+## Auth
+Managed by Clinic. Token injected via ` + "`SLACK_TOKEN`" + ` env var.
+If auth fails, run ` + "`clinic auth slack`" + ` or ` + "`clinic doctor`" + `.
+{{- end}}
+`,
+
+	"yt-dlp": `---
+name: yt-dlp
+description: >
+  Use when the user needs to download video or audio from YouTube or other
+  sites, extract metadata, get subtitles, or convert media formats. yt-dlp
+  is installed.
+allowed-tools: Bash(yt-dlp:*)
+---
+
+You have ` + "`yt-dlp`" + ` (v{{.Version}}) installed.
+
+## Key commands
+- ` + "`yt-dlp <url>`" + ` — download best quality video
+- ` + "`yt-dlp -x --audio-format mp3 <url>`" + ` — extract audio as MP3
+- ` + "`yt-dlp -f \"bestvideo+bestaudio\" <url>`" + ` — download best video + audio separately and merge
+- ` + "`yt-dlp --list-formats <url>`" + ` — list all available formats
+- ` + "`yt-dlp --write-subs --sub-langs en <url>`" + ` — download with subtitles
+- ` + "`yt-dlp --write-info-json --skip-download <url>`" + ` — get metadata only
+- ` + "`yt-dlp -o \"%(title)s.%(ext)s\" <url>`" + ` — custom output filename
+- ` + "`yt-dlp --flat-playlist <playlist-url>`" + ` — list playlist contents without downloading
+
+## Conventions
+- Use ` + "`-f`" + ` to select specific quality/format (e.g., ` + "`-f 720`" + ` for 720p)
+- Use ` + "`-o`" + ` to control output filename template
+- Use ` + "`--restrict-filenames`" + ` for safe filenames (no spaces/special chars)
+- Use ` + "`--download-archive done.txt`" + ` to avoid re-downloading
+- Supports 1000+ sites beyond YouTube — just pass any supported URL
+- Use ` + "`--cookies-from-browser chrome`" + ` if a video requires authentication
+`,
+
+	"ticker": `---
+name: ticker
+description: >
+  Use when the user needs real-time stock quotes, crypto prices, or portfolio
+  tracking in the terminal. Ticker is installed.
+allowed-tools: Bash(ticker:*)
+---
+
+You have ` + "`ticker`" + ` (v{{.Version}}) installed.
+
+## Key commands
+- ` + "`ticker -w AAPL,GOOGL,MSFT`" + ` — watch specific stocks
+- ` + "`ticker -w BTC-USD,ETH-USD`" + ` — watch crypto prices
+- ` + "`ticker --config ~/.ticker.yaml`" + ` — use a config file for watchlists
+
+## Config file (~/.ticker.yaml)
+` + "```yaml" + `
+watchlist:
+  - symbol: AAPL
+    quantity: 10
+    cost: 150.00
+  - symbol: BTC-USD
+    quantity: 0.5
+    cost: 30000.00
+` + "```" + `
+
+## Conventions
+- Use Yahoo Finance ticker symbols (e.g., AAPL, GOOGL, BTC-USD, ETH-USD)
+- Crypto symbols use the ` + "`-USD`" + ` suffix (e.g., ` + "`BTC-USD`" + `, ` + "`ETH-USD`" + `)
+- Use a config file for persistent watchlists with position tracking
+- Data comes from Yahoo Finance — may have a slight delay for real-time quotes
+- Use ` + "`--sort change`" + ` to sort by daily change percentage
+`,
+
+	"circumflex": `---
+name: hackernews
+description: >
+  Use when the user wants to browse Hacker News — read top stories, view
+  comments, or find tech news. Circumflex (clx) is installed.
+allowed-tools: Bash(clx:*)
+---
+
+You have ` + "`clx`" + ` (circumflex, v{{.Version}}) installed.
+
+## Key commands
+- ` + "`clx`" + ` — launch the interactive Hacker News TUI
+- Navigate with arrow keys or vim-style j/k
+- Enter to open article in Reader Mode
+- ` + "`c`" + ` to view comments
+- ` + "`o`" + ` to open in browser
+- ` + "`f`" + ` to toggle favorites
+
+## Conventions
+- Circumflex is primarily an interactive TUI — launch it for the user to browse
+- Reader Mode renders articles in the terminal (no browser needed)
+- Comments are rendered with syntax highlighting and threading
+- Use it when the user asks about tech news, trending topics, or HN discussions
+`,
+
 	"fly": `---
 name: fly
 description: >

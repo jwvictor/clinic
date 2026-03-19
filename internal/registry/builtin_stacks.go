@@ -27,5 +27,10 @@ func builtinStacks() []StackDef {
 			Description: "Google Cloud focused stack",
 			Tools:       []string{"gcloud", "gws", "firebase", "kubectl", "helm", "docker", "gh", "terraform", "jq"},
 		},
+		{
+			Name:        "creator",
+			Description: "Content creator and social media toolkit",
+			Tools:       []string{"x-cli", "late", "yt-dlp", "ticker", "circumflex", "notion", "slack", "discordo"},
+		},
 	}
 }

@@ -425,5 +425,153 @@ func builtinTools() []ToolDef {
 				AuthCmd:    "vault login",
 			},
 		},
+
+		// ── Social Media ──────────────────────────────────────────────
+
+		{
+			Name:           "x-cli",
+			Command:        "x",
+			Description:    "X (Twitter) CLI — post, search, read timeline, manage account",
+			Language:       "rust",
+			Category:       "social",
+			VersionCommand: "x --version",
+			VersionPattern: `x-cli (\S+)`,
+			InstallMethods: []InstallMethod{
+				{Type: "brew", Platforms: []string{"macos", "linux"}, Formula: "x-cli"},
+			},
+			Auth: AuthDef{
+				InjectType: "env",
+				EnvVar:     "X_API_KEY",
+				AuthCheck:  "x auth status",
+				AuthCmd:    "x auth login",
+			},
+		},
+		{
+			Name:           "late",
+			Command:        "late",
+			Description:    "Late (Zernio) — post to 13+ social platforms from one CLI",
+			Language:       "node",
+			Category:       "social",
+			VersionCommand: "late --version",
+			VersionPattern: `(\S+)`,
+			InstallMethods: []InstallMethod{
+				{Type: "npm", Platforms: []string{"macos", "linux"}, Package: "zernio", Global: true},
+			},
+			Auth: AuthDef{
+				InjectType: "env",
+				EnvVar:     "LATE_API_KEY",
+				AuthCheck:  "late auth status",
+				AuthCmd:    "late auth login",
+			},
+			SkillsSource: "zernio-dev/zernio-cli",
+			SkillsSubdir: ".",
+		},
+		{
+			Name:           "discordo",
+			Command:        "discordo",
+			Description:    "Discord terminal client — browse servers, channels, send messages",
+			Language:       "go",
+			Category:       "social",
+			VersionCommand: "discordo --version",
+			VersionPattern: `(\S+)`,
+			InstallMethods: []InstallMethod{
+				{Type: "brew", Platforms: []string{"macos", "linux"}, Formula: "discordo"},
+			},
+			Auth: AuthDef{
+				InjectType: "env",
+				EnvVar:     "DISCORD_TOKEN",
+				AuthCheck:  "discordo --help",
+				AuthCmd:    "discordo",
+			},
+		},
+
+		// ── Productivity ──────────────────────────────────────────────
+
+		{
+			Name:           "notion",
+			Command:        "notion-cli",
+			Description:    "Notion CLI — manage pages, databases, blocks, comments, users",
+			Language:       "go",
+			Category:       "productivity",
+			VersionCommand: "notion-cli --version",
+			VersionPattern: `(\S+)`,
+			InstallMethods: []InstallMethod{
+				{Type: "brew", Platforms: []string{"macos", "linux"}, Formula: "4ier/tap/notion-cli"},
+			},
+			Auth: AuthDef{
+				InjectType: "env",
+				EnvVar:     "NOTION_API_KEY",
+				AuthCheck:  "notion-cli users list",
+				AuthCmd:    "notion-cli auth login",
+			},
+			SkillsSource: "4ier/notion-cli",
+		},
+		{
+			Name:           "slack",
+			Command:        "slack",
+			Description:    "Slack CLI — create and manage Slack apps and workflows",
+			Language:       "go",
+			Category:       "productivity",
+			VersionCommand: "slack --version",
+			VersionPattern: `(\S+)`,
+			InstallMethods: []InstallMethod{
+				{Type: "brew", Platforms: []string{"macos"}, Formula: "slack-cli"},
+				{Type: "curl_script", Platforms: []string{"macos", "linux"}, ScriptURL: "https://downloads.slack-edge.com/slack-cli/install.sh"},
+			},
+			Auth: AuthDef{
+				InjectType: "env",
+				EnvVar:     "SLACK_TOKEN",
+				AuthCheck:  "slack auth info",
+				AuthCmd:    "slack login",
+			},
+		},
+
+		// ── Media ─────────────────────────────────────────────────────
+
+		{
+			Name:           "yt-dlp",
+			Command:        "yt-dlp",
+			Description:    "Download video/audio from YouTube and 1000+ sites",
+			Language:       "python",
+			Category:       "media",
+			VersionCommand: "yt-dlp --version",
+			VersionPattern: `(\S+)`,
+			InstallMethods: []InstallMethod{
+				{Type: "brew", Platforms: []string{"macos", "linux"}, Formula: "yt-dlp"},
+			},
+			Auth: AuthDef{InjectType: "none"},
+		},
+
+		// ── Finance ───────────────────────────────────────────────────
+
+		{
+			Name:           "ticker",
+			Command:        "ticker",
+			Description:    "Real-time stock, crypto, and derivatives tracker in the terminal",
+			Language:       "go",
+			Category:       "finance",
+			VersionCommand: "ticker --version",
+			VersionPattern: `(\S+)`,
+			InstallMethods: []InstallMethod{
+				{Type: "brew", Platforms: []string{"macos", "linux"}, Formula: "achannarasappa/tap/ticker"},
+			},
+			Auth: AuthDef{InjectType: "none"},
+		},
+
+		// ── News ──────────────────────────────────────────────────────
+
+		{
+			Name:           "circumflex",
+			Command:        "clx",
+			Description:    "Hacker News in the terminal — browse, read, comment",
+			Language:       "go",
+			Category:       "news",
+			VersionCommand: "clx --version",
+			VersionPattern: `(\S+)`,
+			InstallMethods: []InstallMethod{
+				{Type: "brew", Platforms: []string{"macos", "linux"}, Formula: "circumflex"},
+			},
+			Auth: AuthDef{InjectType: "none"},
+		},
 	}
 }
