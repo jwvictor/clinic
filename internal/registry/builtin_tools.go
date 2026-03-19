@@ -40,6 +40,7 @@ func builtinTools() []ToolDef {
 				AuthCheck:  "gws auth status",
 				AuthCmd:    "gws auth login",
 			},
+			SkillsSource: "googleworkspace/cli",
 		},
 		{
 			Name:           "gcloud",
@@ -115,6 +116,7 @@ func builtinTools() []ToolDef {
 				AuthCheck:  "doctl account get",
 				AuthCmd:    "doctl auth init",
 			},
+			SkillsSource: "digitalocean-labs/do-app-platform-skills",
 		},
 		{
 			Name:           "vercel",
@@ -133,6 +135,8 @@ func builtinTools() []ToolDef {
 				AuthCheck:  "vercel whoami",
 				AuthCmd:    "vercel login",
 			},
+			SkillsSource: "vercel/vercel",
+			SkillsSubdir: "skills",
 		},
 		{
 			Name:           "netlify",

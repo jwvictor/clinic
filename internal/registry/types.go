@@ -12,6 +12,13 @@ type ToolDef struct {
 	InstallMethods []InstallMethod `json:"install_methods"`
 	Auth           AuthDef        `json:"auth"`
 	SkillTemplate  string         `json:"skill_template"`
+	// SkillsSource is a GitHub repo containing vendor-shipped skills.
+	// Format: "owner/repo" (e.g., "googleworkspace/cli").
+	// If set, Clinic fetches skills from this repo instead of generating them.
+	// The repo is expected to have a skills/ directory with SKILL.md files.
+	SkillsSource   string         `json:"skills_source,omitempty"`
+	// SkillsSubdir overrides the default "skills" subdirectory in the source repo.
+	SkillsSubdir   string         `json:"skills_subdir,omitempty"`
 }
 
 // InstallMethod defines one way to install a tool.

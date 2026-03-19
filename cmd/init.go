@@ -87,10 +87,10 @@ var initCmd = &cobra.Command{
 			}
 
 			// Generate skill
-			if err := skills.Generate(tool, status, health.AuthUser); err != nil {
+			if desc, err := skills.Generate(tool, status, health.AuthUser); err != nil {
 				fmt.Fprintf(os.Stderr, "  ⚠ Skill generation failed: %s\n", err)
 			} else {
-				fmt.Printf("  ✓ Skill generated: %s\n", skills.SkillPath(tool.Name))
+				fmt.Printf("  ✓ Skills: %s (%s)\n", skills.SkillPath(tool.Name), desc)
 			}
 
 			// Record in lockfile

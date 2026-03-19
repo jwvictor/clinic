@@ -44,10 +44,10 @@ var generateCmd = &cobra.Command{
 
 			health := doctor.Check(tool)
 
-			if err := skills.Generate(tool, status, health.AuthUser); err != nil {
+			if desc, err := skills.Generate(tool, status, health.AuthUser); err != nil {
 				fmt.Printf("%-16s ✗ %s\n", toolName, err)
 			} else {
-				fmt.Printf("%-16s ✓ %s\n", toolName, skills.SkillPath(toolName))
+				fmt.Printf("%-16s ✓ %s (%s)\n", toolName, skills.SkillPath(toolName), desc)
 				generated++
 			}
 		}

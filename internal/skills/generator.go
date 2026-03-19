@@ -24,19 +24,43 @@ type GenerateData struct {
 	NeedsAuth   bool
 }
 
-// skillDirs returns all directories where skills should be written.
-// The same SKILL.md works for all targets (Agent Skills standard).
-func skillDirs(toolName string) []string {
+// targetDirs returns all directories where skills should be written.
+func targetDirs() []string {
 	home, _ := os.UserHomeDir()
 	return []string{
-		filepath.Join(home, ".openclaw", "skills", toolName),  // OpenClaw (primary target)
-		filepath.Join(home, ".claude", "skills", toolName),    // Claude Code
-		filepath.Join(home, ".agents", "skills", toolName),    // Agent Skills open standard
+		filepath.Join(home, ".openclaw", "skills"), // OpenClaw (primary target)
+		filepath.Join(home, ".claude", "skills"),   // Claude Code
+		filepath.Join(home, ".agents", "skills"),   // Agent Skills open standard
 	}
 }
 
-// Generate creates SKILL.md files for the given tool across all agent platforms.
-func Generate(tool registry.ToolDef, status installer.Status, authUser string) error {
+// skillDirsForTool returns all target directories for a specific tool.
+func skillDirsForTool(toolName string) []string {
+	var dirs []string
+	for _, root := range targetDirs() {
+		dirs = append(dirs, filepath.Join(root, toolName))
+	}
+	return dirs
+}
+
+// Generate creates skill files for the given tool.
+// It uses a three-tier strategy:
+//  1. Vendor skills — if the tool ships its own skills (e.g., gws has 93), fetch them
+//  2. Curated skills — hand-written templates for popular tools (gh, aws, stripe, etc.)
+//  3. Generic fallback — basic template for everything else
+func Generate(tool registry.ToolDef, status installer.Status, authUser string) (string, error) {
+	// Tier 1: Vendor-shipped skills
+	if HasVendorSkills(tool) {
+		count, err := FetchVendorSkills(tool)
+		if err != nil {
+			// Fall through to curated/generic on vendor failure
+			fmt.Fprintf(os.Stderr, "  ⚠ Vendor skills fetch failed (%s), falling back to curated\n", err)
+		} else {
+			return fmt.Sprintf("%d vendor skills installed", count), nil
+		}
+	}
+
+	// Build template data
 	needsAuth := tool.Auth.InjectType != "" && tool.Auth.InjectType != "none"
 	cleanAuthUser := authUser
 	if !needsAuth || authUser == "n/a" {
@@ -55,42 +79,44 @@ func Generate(tool registry.ToolDef, status installer.Status, authUser string) e
 		NeedsAuth:   needsAuth,
 	}
 
-	content, err := renderSkill(data)
-	if err != nil {
-		return fmt.Errorf("rendering skill template: %w", err)
+	// Tier 2: Curated skill template
+	tmplStr, hasCurated := curatedSkills[tool.Name]
+	if !hasCurated {
+		// Tier 3: Generic fallback
+		tmplStr = genericTemplate
 	}
 
-	for _, dir := range skillDirs(tool.Name) {
+	content, err := renderTemplate(tmplStr, data)
+	if err != nil {
+		return "", fmt.Errorf("rendering skill template: %w", err)
+	}
+
+	// Write to all target directories
+	for _, dir := range skillDirsForTool(tool.Name) {
 		if err := os.MkdirAll(dir, 0755); err != nil {
-			return fmt.Errorf("creating skill directory %s: %w", dir, err)
+			return "", fmt.Errorf("creating skill directory %s: %w", dir, err)
 		}
 		skillPath := filepath.Join(dir, "SKILL.md")
 		if err := os.WriteFile(skillPath, []byte(content), 0644); err != nil {
-			return fmt.Errorf("writing skill file %s: %w", skillPath, err)
+			return "", fmt.Errorf("writing skill file %s: %w", skillPath, err)
 		}
 	}
 
-	return nil
+	if hasCurated {
+		return "curated skill", nil
+	}
+	return "generic skill", nil
 }
 
 // Remove deletes the skill directories for a tool across all platforms.
 func Remove(toolName string) error {
 	var lastErr error
-	for _, dir := range skillDirs(toolName) {
+	for _, dir := range skillDirsForTool(toolName) {
 		if err := os.RemoveAll(dir); err != nil {
 			lastErr = err
 		}
 	}
 	return lastErr
-}
-
-// SkillPaths returns all paths where a tool's skill is generated.
-func SkillPaths(toolName string) []string {
-	var paths []string
-	for _, dir := range skillDirs(toolName) {
-		paths = append(paths, filepath.Join(dir, "SKILL.md"))
-	}
-	return paths
 }
 
 // SkillPath returns the primary skill path (OpenClaw) for display purposes.
@@ -99,7 +125,7 @@ func SkillPath(toolName string) string {
 	return filepath.Join(home, ".openclaw", "skills", toolName, "SKILL.md")
 }
 
-const skillTemplate = `---
+const genericTemplate = `---
 name: {{.Name}}
 description: >
   Use when the user needs {{.Description}}.
@@ -125,8 +151,8 @@ To re-authenticate manually: ` + "`{{.AuthCmd}}`" + `
 {{- end}}
 `
 
-func renderSkill(data GenerateData) (string, error) {
-	tmpl, err := template.New("skill").Parse(skillTemplate)
+func renderTemplate(tmplStr string, data GenerateData) (string, error) {
+	tmpl, err := template.New("skill").Parse(tmplStr)
 	if err != nil {
 		return "", err
 	}
