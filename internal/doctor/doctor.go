@@ -76,8 +76,9 @@ func checkSkillExists(toolName string) bool {
 func skillPaths(toolName string) []string {
 	home := homeDir()
 	return []string{
+		home + "/.openclaw/skills/" + toolName + "/SKILL.md",
 		home + "/.claude/skills/" + toolName + "/SKILL.md",
-		".claude/skills/" + toolName + "/SKILL.md",
+		home + "/.agents/skills/" + toolName + "/SKILL.md",
 	}
 }
 
