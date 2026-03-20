@@ -53,7 +53,7 @@ var addCmd = &cobra.Command{
 		} else if health.AuthOK {
 			fmt.Printf("✓ Authenticated (%s)\n", health.AuthUser)
 		} else {
-			fmt.Printf("⚠ Not authenticated — run: %s\n", tool.Auth.AuthCmd)
+			fmt.Printf("⚠ Not authenticated — run: clinic auth %s\n", tool.Name)
 		}
 
 		// Generate skill (only if authed or no auth needed)
