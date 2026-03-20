@@ -48,7 +48,18 @@ func skillDirsForTool(toolName string) []string {
 //  1. Vendor skills — if the tool ships its own skills (e.g., gws has 93), fetch them
 //  2. Curated skills — hand-written templates for popular tools (gh, aws, stripe, etc.)
 //  3. Generic fallback — basic template for everything else
-func Generate(tool registry.ToolDef, status installer.Status, authUser string) (string, error) {
+//
+// If the tool requires auth and authOK is false, skills are NOT generated
+// (and any existing skills are removed) to prevent agents from trying to
+// use unauthenticated tools.
+func Generate(tool registry.ToolDef, status installer.Status, authUser string, authOK bool) (string, error) {
+	// Don't generate skills for unauthenticated tools that need auth
+	needsAuth := tool.Auth.InjectType != "" && tool.Auth.InjectType != "none"
+	if needsAuth && !authOK {
+		// Remove any stale skills from a previous install
+		Remove(tool.Name)
+		return "", fmt.Errorf("skipped — authenticate first")
+	}
 	// Tier 1: Vendor-shipped skills
 	if HasVendorSkills(tool) {
 		count, err := FetchVendorSkills(tool)
@@ -61,7 +72,6 @@ func Generate(tool registry.ToolDef, status installer.Status, authUser string) (
 	}
 
 	// Build template data
-	needsAuth := tool.Auth.InjectType != "" && tool.Auth.InjectType != "none"
 	cleanAuthUser := authUser
 	if !needsAuth || authUser == "n/a" {
 		cleanAuthUser = ""

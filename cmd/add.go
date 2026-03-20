@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/spf13/cobra"
 	"github.com/togglemedia/clinic/internal/config"
@@ -56,9 +55,10 @@ var addCmd = &cobra.Command{
 			fmt.Printf("⚠ Not authenticated — run: %s\n", tool.Auth.AuthCmd)
 		}
 
-		// Generate skill
-		if desc, err := skills.Generate(tool, status, health.AuthUser); err != nil {
-			fmt.Fprintf(os.Stderr, "⚠ Skill generation failed: %s\n", err)
+		// Generate skill (only if authed or no auth needed)
+		noAuthNeeded := tool.Auth.InjectType == "" || tool.Auth.InjectType == "none"
+		if desc, err := skills.Generate(tool, status, health.AuthUser, health.AuthOK || noAuthNeeded); err != nil {
+			fmt.Printf("⚠ Skills: %s\n", err)
 		} else {
 			fmt.Printf("✓ Skills: %s (%s)\n", skills.SkillPath(tool.Name), desc)
 		}

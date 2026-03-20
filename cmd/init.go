@@ -48,8 +48,42 @@ var initCmd = &cobra.Command{
 			return fmt.Errorf("unknown stack: %s", initStack)
 		}
 
-		fmt.Printf("Clinic — Setting up your agent workspace\n\n")
-		fmt.Printf("Stack: %s (%d tools)\n\n", stack.Name, len(stack.Tools))
+		// Multi-select which tools to install (all pre-selected)
+		options := make([]huh.Option[string], 0, len(stack.Tools))
+		var defaultSelected []string
+		for _, toolName := range stack.Tools {
+			tool, ok := reg.GetTool(toolName)
+			if !ok {
+				continue
+			}
+			options = append(options, huh.NewOption(
+				fmt.Sprintf("%s — %s", tool.Name, tool.Description),
+				tool.Name,
+			))
+			defaultSelected = append(defaultSelected, tool.Name)
+		}
+
+		var selectedTools []string
+		form := huh.NewForm(
+			huh.NewGroup(
+				huh.NewMultiSelect[string]().
+					Title(fmt.Sprintf("Stack: %s — select tools to install", stack.Name)).
+					Description("Space to toggle, Enter to confirm").
+					Options(options...).
+					Value(&selectedTools),
+			),
+		)
+		selectedTools = defaultSelected // pre-select all
+		if err := form.Run(); err != nil {
+			return nil // user cancelled
+		}
+
+		if len(selectedTools) == 0 {
+			fmt.Println("No tools selected.")
+			return nil
+		}
+
+		fmt.Printf("\nClinic — Setting up your agent workspace\n\n")
 
 		lf, err := config.LoadLockfile()
 		if err != nil {
@@ -57,22 +91,24 @@ var initCmd = &cobra.Command{
 		}
 		lf.Project.Stack = stack.Name
 
-		// Track tools that need auth
+		// Track tools that need auth and tools that got authed
 		type unauthTool struct {
 			name     string
+			tool     registry.ToolDef
+			status   installer.Status
 			authCmd  string
 			authHint string
 		}
 		var needsAuth []unauthTool
 
-		for i, toolName := range stack.Tools {
+		for i, toolName := range selectedTools {
 			tool, ok := reg.GetTool(toolName)
 			if !ok {
-				fmt.Printf("[%d/%d] %s — not found in registry, skipping\n", i+1, len(stack.Tools), toolName)
+				fmt.Printf("[%d/%d] %s — not found in registry, skipping\n", i+1, len(selectedTools), toolName)
 				continue
 			}
 
-			fmt.Printf("[%d/%d] %s (%s)\n", i+1, len(stack.Tools), tool.Name, tool.Description)
+			fmt.Printf("[%d/%d] %s (%s)\n", i+1, len(selectedTools), tool.Name, tool.Description)
 
 			// Detect existing installation
 			status := installer.Detect(tool)
@@ -87,28 +123,34 @@ var initCmd = &cobra.Command{
 					continue
 				}
 				status = installer.Detect(tool)
-				status.InstalledVia = method // trust the method we just used
+				status.InstalledVia = method
 				fmt.Printf("  ✓ Installed v%s via %s\n", status.Version, method)
 			}
 
 			// Check auth
 			health := doctor.Check(tool)
-			if tool.Auth.InjectType == "" || tool.Auth.InjectType == "none" {
-				// No auth needed, skip
+			noAuthNeeded := tool.Auth.InjectType == "" || tool.Auth.InjectType == "none"
+
+			if noAuthNeeded {
+				// No auth needed — generate skills immediately
 			} else if health.AuthOK {
 				fmt.Printf("  ✓ Authenticated (%s)\n", health.AuthUser)
 			} else {
 				fmt.Printf("  ⚠ Not authenticated\n")
-				needsAuth = append(needsAuth, unauthTool{
-					name:     tool.Name,
-					authCmd:  tool.Auth.AuthCmd,
-					authHint: tool.Auth.AuthHint,
-				})
+				if tool.Auth.AuthCmd != "" {
+					needsAuth = append(needsAuth, unauthTool{
+						name:     tool.Name,
+						tool:     tool,
+						status:   status,
+						authCmd:  tool.Auth.AuthCmd,
+						authHint: tool.Auth.AuthHint,
+					})
+				}
 			}
 
-			// Generate skill
-			if desc, err := skills.Generate(tool, status, health.AuthUser); err != nil {
-				fmt.Fprintf(os.Stderr, "  ⚠ Skill generation failed: %s\n", err)
+			// Generate skill (will be skipped if auth is needed but not done)
+			if desc, err := skills.Generate(tool, status, health.AuthUser, health.AuthOK || noAuthNeeded); err != nil {
+				fmt.Printf("  ⚠ Skills: %s\n", err)
 			} else {
 				fmt.Printf("  ✓ Skills: %s (%s)\n", skills.SkillPath(tool.Name), desc)
 			}
@@ -130,36 +172,33 @@ var initCmd = &cobra.Command{
 
 		// Offer to authenticate tools that need it
 		if len(needsAuth) > 0 {
-			// Build options for multi-select
-			options := make([]huh.Option[string], len(needsAuth))
+			authOptions := make([]huh.Option[string], len(needsAuth))
 			for i, t := range needsAuth {
-				options[i] = huh.NewOption(t.name, t.name)
+				authOptions[i] = huh.NewOption(t.name, t.name)
 			}
 
-			var selected []string
-			form := huh.NewForm(
+			var selectedAuth []string
+			authForm := huh.NewForm(
 				huh.NewGroup(
 					huh.NewMultiSelect[string]().
 						Title("Which tools do you want to authenticate?").
-						Description("Space to toggle, Enter to confirm").
-						Options(options...).
-						Value(&selected),
+						Description("Skills are only installed for authenticated tools. Space to toggle, Enter to confirm").
+						Options(authOptions...).
+						Value(&selectedAuth),
 				),
 			)
 
-			if err := form.Run(); err != nil {
-				// User cancelled (ctrl+c), skip auth
+			if err := authForm.Run(); err != nil {
 				fmt.Println()
 			}
 
-			if len(selected) > 0 {
+			if len(selectedAuth) > 0 {
 				fmt.Println()
-				// Build lookup for quick access
 				authMap := map[string]unauthTool{}
 				for _, t := range needsAuth {
 					authMap[t.name] = t
 				}
-				for _, name := range selected {
+				for _, name := range selectedAuth {
 					t := authMap[name]
 					fmt.Printf("─── Authenticating %s ───\n", t.name)
 					if t.authHint != "" {
@@ -174,7 +213,14 @@ var initCmd = &cobra.Command{
 					if err := c.Run(); err != nil {
 						fmt.Printf("\n⚠ %s auth failed: %s\n\n", t.name, err)
 					} else {
-						fmt.Printf("\n✓ %s authenticated\n\n", t.name)
+						fmt.Printf("\n✓ %s authenticated\n", t.name)
+						// Now generate skills for the newly authed tool
+						health := doctor.Check(t.tool)
+						if desc, err := skills.Generate(t.tool, t.status, health.AuthUser, true); err != nil {
+							fmt.Printf("  ⚠ Skills: %s\n\n", err)
+						} else {
+							fmt.Printf("  ✓ Skills installed: %s (%s)\n\n", skills.SkillPath(t.name), desc)
+						}
 					}
 				}
 			}

@@ -43,8 +43,9 @@ var generateCmd = &cobra.Command{
 			}
 
 			health := doctor.Check(tool)
+			noAuthNeeded := tool.Auth.InjectType == "" || tool.Auth.InjectType == "none"
 
-			if desc, err := skills.Generate(tool, status, health.AuthUser); err != nil {
+			if desc, err := skills.Generate(tool, status, health.AuthUser, health.AuthOK || noAuthNeeded); err != nil {
 				fmt.Printf("%-16s ✗ %s\n", toolName, err)
 			} else {
 				fmt.Printf("%-16s ✓ %s (%s)\n", toolName, skills.SkillPath(toolName), desc)

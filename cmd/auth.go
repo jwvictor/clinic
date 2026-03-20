@@ -9,7 +9,9 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/togglemedia/clinic/internal/config"
 	"github.com/togglemedia/clinic/internal/doctor"
+	"github.com/togglemedia/clinic/internal/installer"
 	"github.com/togglemedia/clinic/internal/registry"
+	"github.com/togglemedia/clinic/internal/skills"
 )
 
 var authStatus bool
@@ -119,6 +121,16 @@ func runAuth(toolName string) error {
 	}
 
 	fmt.Printf("\n✓ %s authenticated\n", toolName)
+
+	// Generate skills now that the tool is authenticated
+	status := installer.Detect(tool)
+	health := doctor.Check(tool)
+	if desc, err := skills.Generate(tool, status, health.AuthUser, true); err != nil {
+		fmt.Fprintf(os.Stderr, "⚠ Skills: %s\n", err)
+	} else {
+		fmt.Printf("✓ Skills installed: %s (%s)\n", skills.SkillPath(tool.Name), desc)
+	}
+
 	return nil
 }
 
