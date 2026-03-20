@@ -55,7 +55,7 @@ func FetchVendorSkills(tool registry.ToolDef) (int, error) {
 		if err != nil {
 			return nil // skip errors
 		}
-		if d.Name() == "SKILL.md" && !d.IsDir() {
+		if strings.EqualFold(d.Name(), "SKILL.md") && !d.IsDir() {
 			skillDirsToCopy = append(skillDirsToCopy, filepath.Dir(path))
 		}
 		return nil
