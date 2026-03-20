@@ -29,7 +29,8 @@
     "env_var": "X_API_KEY",
     "auth_check": "x accounts",
     "auth_check_pattern": "\\S",
-    "auth_command": "x authorize"
+    "auth_command": "x authorize",
+    "auth_hint": "Requires X/Twitter API credentials. Create an app at https://developer.x.com/portal then run: x authorize"
   },
   "skill_template": ""
 }
