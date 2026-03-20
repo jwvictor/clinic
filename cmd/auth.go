@@ -126,23 +126,12 @@ func runAuth(toolName string) error {
 		fmt.Printf("ℹ %s\n\n", tool.Auth.AuthHint)
 	}
 
-	// Run the auth command interactively.
-	// Open /dev/tty directly so TUI tools get proper terminal access even
-	// if our own stdin has been modified (e.g., by a preceding huh form).
-	parts := strings.Fields(authCommand)
-	c := exec.Command(parts[0], parts[1:]...)
-	tty, ttyErr := os.OpenFile("/dev/tty", os.O_RDWR, 0)
-	if ttyErr == nil {
-		c.Stdin = tty
-		c.Stdout = tty
-		c.Stderr = tty
-		defer tty.Close()
-	} else {
-		// Fallback to inherited stdio
-		c.Stdin = os.Stdin
-		c.Stdout = os.Stdout
-		c.Stderr = os.Stderr
-	}
+	// Run the auth command interactively via a shell so TUI tools get
+	// proper terminal control (process group, job control, etc.).
+	c := exec.Command("sh", "-c", authCommand)
+	c.Stdin = os.Stdin
+	c.Stdout = os.Stdout
+	c.Stderr = os.Stderr
 
 	if err := c.Run(); err != nil {
 		return fmt.Errorf("auth failed: %w", err)
