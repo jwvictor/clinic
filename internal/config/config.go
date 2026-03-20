@@ -67,6 +67,7 @@ type ProjectConfig struct {
 type ToolLock struct {
 	Version      string `json:"version"`
 	InstalledVia string `json:"installed_via"`
+	PreExisting  bool   `json:"pre_existing,omitempty"`
 }
 
 // LockfilePath returns the path to ~/.clinic/clinic.json.

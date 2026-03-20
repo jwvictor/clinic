@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/togglemedia/clinic/cmd"
+	"github.com/jwvictor/clinic/cmd"
 )
 
 func main() {

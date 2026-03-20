@@ -7,8 +7,8 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/togglemedia/clinic/internal/installer"
-	"github.com/togglemedia/clinic/internal/registry"
+	"github.com/jwvictor/clinic/internal/installer"
+	"github.com/jwvictor/clinic/internal/registry"
 )
 
 // GenerateData holds the template variables for skill generation.

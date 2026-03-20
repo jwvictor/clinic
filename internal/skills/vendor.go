@@ -8,8 +8,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/togglemedia/clinic/internal/config"
-	"github.com/togglemedia/clinic/internal/registry"
+	"github.com/jwvictor/clinic/internal/config"
+	"github.com/jwvictor/clinic/internal/registry"
 )
 
 // vendorSkillNames maps tool name → actual vendor skill directory name.

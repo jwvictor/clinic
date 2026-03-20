@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
-	"github.com/togglemedia/clinic/internal/registry"
+	"github.com/jwvictor/clinic/internal/registry"
 )
 
 var stacksCmd = &cobra.Command{

@@ -1,4 +1,4 @@
-module github.com/togglemedia/clinic
+module github.com/jwvictor/clinic
 
 go 1.25.6
 

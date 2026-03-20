@@ -4,10 +4,10 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-	"github.com/togglemedia/clinic/internal/config"
-	"github.com/togglemedia/clinic/internal/installer"
-	"github.com/togglemedia/clinic/internal/registry"
-	"github.com/togglemedia/clinic/internal/skills"
+	"github.com/jwvictor/clinic/internal/config"
+	"github.com/jwvictor/clinic/internal/installer"
+	"github.com/jwvictor/clinic/internal/registry"
+	"github.com/jwvictor/clinic/internal/skills"
 )
 
 var keepBinary bool
@@ -29,8 +29,10 @@ var removeCmd = &cobra.Command{
 			return fmt.Errorf("%s is not in your clinic workspace", toolName)
 		}
 
-		// Uninstall the binary unless --keep-binary is set
-		if !keepBinary {
+		// Uninstall the binary unless --keep-binary is set or it was pre-existing
+		if toolLock.PreExisting {
+			fmt.Printf("✓ Keeping %s binary (was already installed before clinic)\n", toolName)
+		} else if !keepBinary {
 			reg := registry.Load()
 			if tool, found := reg.GetTool(toolName); found {
 				if err := installer.Uninstall(tool, toolLock.InstalledVia); err != nil {

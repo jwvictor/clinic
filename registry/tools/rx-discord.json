@@ -13,7 +13,7 @@
         "macos",
         "linux"
       ],
-      "package": "github.com/togglemedia/rx@latest"
+      "package": "github.com/jwvictor/rx@latest"
     }
   ],
   "auth": {

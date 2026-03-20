@@ -6,8 +6,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/togglemedia/clinic/internal/installer"
-	"github.com/togglemedia/clinic/internal/registry"
+	"github.com/jwvictor/clinic/internal/installer"
+	"github.com/jwvictor/clinic/internal/registry"
 )
 
 // ToolHealth represents the full health status of a managed tool.

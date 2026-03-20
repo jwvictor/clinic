@@ -4,9 +4,9 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-	"github.com/togglemedia/clinic/internal/config"
-	"github.com/togglemedia/clinic/internal/doctor"
-	"github.com/togglemedia/clinic/internal/registry"
+	"github.com/jwvictor/clinic/internal/config"
+	"github.com/jwvictor/clinic/internal/doctor"
+	"github.com/jwvictor/clinic/internal/registry"
 )
 
 var doctorCmd = &cobra.Command{

@@ -8,11 +8,11 @@ import (
 
 	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
-	"github.com/togglemedia/clinic/internal/config"
-	"github.com/togglemedia/clinic/internal/doctor"
-	"github.com/togglemedia/clinic/internal/installer"
-	"github.com/togglemedia/clinic/internal/registry"
-	"github.com/togglemedia/clinic/internal/skills"
+	"github.com/jwvictor/clinic/internal/config"
+	"github.com/jwvictor/clinic/internal/doctor"
+	"github.com/jwvictor/clinic/internal/installer"
+	"github.com/jwvictor/clinic/internal/registry"
+	"github.com/jwvictor/clinic/internal/skills"
 )
 
 var initStack string
@@ -109,6 +109,7 @@ var initCmd = &cobra.Command{
 
 			// Detect existing installation
 			status := installer.Detect(tool)
+			preExisting := status.Installed
 
 			if status.Installed {
 				fmt.Printf("  ✓ Already installed (v%s via %s)\n", status.Version, status.InstalledVia)
@@ -142,6 +143,14 @@ var initCmd = &cobra.Command{
 						authCmd:  tool.Auth.AuthCmd,
 						authHint: tool.Auth.AuthHint,
 					})
+				} else if tool.Auth.EnvVar != "" {
+					// Env-var-only tool — tell the user what to do
+					hint := tool.Auth.AuthHint
+					if hint == "" {
+						hint = fmt.Sprintf("export %s=\"your-key-here\"", tool.Auth.EnvVar)
+					}
+					fmt.Printf("    ℹ %s\n", hint)
+					fmt.Printf("    Then run: clinic generate\n")
 				}
 			}
 
@@ -156,6 +165,7 @@ var initCmd = &cobra.Command{
 			lf.Tools[tool.Name] = config.ToolLock{
 				Version:      status.Version,
 				InstalledVia: status.InstalledVia,
+				PreExisting:  preExisting,
 			}
 
 			fmt.Println()

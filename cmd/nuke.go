@@ -7,10 +7,10 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
-	"github.com/togglemedia/clinic/internal/config"
-	"github.com/togglemedia/clinic/internal/installer"
-	"github.com/togglemedia/clinic/internal/registry"
-	"github.com/togglemedia/clinic/internal/skills"
+	"github.com/jwvictor/clinic/internal/config"
+	"github.com/jwvictor/clinic/internal/installer"
+	"github.com/jwvictor/clinic/internal/registry"
+	"github.com/jwvictor/clinic/internal/skills"
 )
 
 var nukeCmd = &cobra.Command{
@@ -32,9 +32,24 @@ or run: rm $(which clinic))`,
 			return nil
 		}
 
+		// Count pre-existing vs clinic-installed
+		var clinicInstalled, preExisting int
+		for _, tl := range lf.Tools {
+			if tl.PreExisting {
+				preExisting++
+			} else {
+				clinicInstalled++
+			}
+		}
+
 		// Show what will be destroyed
 		fmt.Println("This will:")
-		fmt.Printf("  • Uninstall %d tools (%s)\n", len(lf.Tools), toolNames(lf))
+		if clinicInstalled > 0 {
+			fmt.Printf("  • Uninstall %d tool(s) installed by clinic\n", clinicInstalled)
+		}
+		if preExisting > 0 {
+			fmt.Printf("  • Keep %d pre-existing tool(s) (only remove clinic skills/config)\n", preExisting)
+		}
 		fmt.Println("  • Delete all generated skill files")
 		fmt.Println("  • Remove ~/.clinic and all config")
 		fmt.Println()
@@ -52,8 +67,13 @@ or run: rm $(which clinic))`,
 		fmt.Println()
 		reg := registry.Load()
 
-		// 1. Uninstall each tool
+		// 1. Uninstall each tool (skip pre-existing ones)
 		for toolName, toolLock := range lf.Tools {
+			if toolLock.PreExisting {
+				fmt.Printf("  ✓ Keeping %s (was already installed before clinic)\n", toolName)
+				continue
+			}
+
 			tool, ok := reg.GetTool(toolName)
 			if !ok {
 				fmt.Printf("  ⚠ %s not in registry, skipping uninstall\n", toolName)

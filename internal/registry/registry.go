@@ -11,8 +11,8 @@ import (
 	"sort"
 	"time"
 
-	"github.com/togglemedia/clinic/internal/config"
-	registrydata "github.com/togglemedia/clinic/registry"
+	"github.com/jwvictor/clinic/internal/config"
+	registrydata "github.com/jwvictor/clinic/registry"
 )
 
 const (

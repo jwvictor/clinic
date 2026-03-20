@@ -9,7 +9,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/togglemedia/clinic/internal/registry"
+	"github.com/jwvictor/clinic/internal/registry"
 )
 
 // Status represents the install state of a tool.

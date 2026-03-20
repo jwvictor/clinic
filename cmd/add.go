@@ -4,11 +4,11 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-	"github.com/togglemedia/clinic/internal/config"
-	"github.com/togglemedia/clinic/internal/doctor"
-	"github.com/togglemedia/clinic/internal/installer"
-	"github.com/togglemedia/clinic/internal/registry"
-	"github.com/togglemedia/clinic/internal/skills"
+	"github.com/jwvictor/clinic/internal/config"
+	"github.com/jwvictor/clinic/internal/doctor"
+	"github.com/jwvictor/clinic/internal/installer"
+	"github.com/jwvictor/clinic/internal/registry"
+	"github.com/jwvictor/clinic/internal/skills"
 )
 
 var addCmd = &cobra.Command{
@@ -32,6 +32,7 @@ var addCmd = &cobra.Command{
 
 		// Detect or install
 		status := installer.Detect(tool)
+		preExisting := status.Installed
 		if status.Installed {
 			fmt.Printf("✓ Already installed (v%s via %s)\n", status.Version, status.InstalledVia)
 		} else {
@@ -71,6 +72,7 @@ var addCmd = &cobra.Command{
 		lf.Tools[tool.Name] = config.ToolLock{
 			Version:      status.Version,
 			InstalledVia: status.InstalledVia,
+			PreExisting:  preExisting,
 		}
 		return lf.Save()
 	},
