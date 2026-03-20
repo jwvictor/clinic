@@ -294,7 +294,7 @@ If auth fails, run ` + "`clinic auth x-cli`" + ` or ` + "`clinic doctor`" + `.
 {{- end}}
 `,
 
-	// "late" uses vendor skills from zernio-dev/zernio-cli
+	// "postiz" uses vendor skills from gitroomhq/postiz-agent
 
 	"discordo": `---
 name: discord

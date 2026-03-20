@@ -3,7 +3,7 @@
   "description": "Content creator and social media toolkit",
   "tools": [
     "x-cli",
-    "late",
+    "postiz",
     "yt-dlp",
     "circumflex",
     "notion",

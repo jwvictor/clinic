@@ -2,7 +2,9 @@ package installer
 
 import (
 	"fmt"
+	"os"
 	"os/exec"
+	"path/filepath"
 	"regexp"
 	"runtime"
 	"strings"
@@ -171,6 +173,9 @@ func Install(tool registry.ToolDef) (string, error) {
 			if hasGo() && method.Package != "" {
 				err := runInstall("go", "install", method.Package)
 				if err == nil {
+					// go install puts binaries in ~/go/bin which may not be in PATH —
+					// symlink into /usr/local/bin so it's always available
+					symlinkToPath(tool.Command, gobin())
 					return "go_install", nil
 				}
 			}
@@ -179,6 +184,8 @@ func Install(tool registry.ToolDef) (string, error) {
 				args := []string{"install", "--git", method.Package}
 				err := runInstall("cargo", args...)
 				if err == nil {
+					// cargo install puts binaries in ~/.cargo/bin which may not be in PATH
+					symlinkToPath(tool.Command, cargobin())
 					return "cargo_install", nil
 				}
 			}
@@ -253,9 +260,46 @@ func Uninstall(tool registry.ToolDef, installedVia string) error {
 			return runInstall("sudo", append([]string{"npm"}, args...)...)
 		}
 		return err
+	case "go_install":
+		binPath := filepath.Join(gobin(), tool.Command)
+		os.Remove(binPath)
+		// Remove symlink if we created one
+		os.Remove(filepath.Join("/usr/local/bin", tool.Command))
+		return nil
+	case "cargo_install":
+		return runInstall("cargo", "uninstall", tool.Command)
 	default:
 		return fmt.Errorf("don't know how to uninstall %s (installed via %s)", tool.Name, installedVia)
 	}
+}
+
+func gobin() string {
+	if gb := os.Getenv("GOBIN"); gb != "" {
+		return gb
+	}
+	gp := os.Getenv("GOPATH")
+	if gp == "" {
+		home, _ := os.UserHomeDir()
+		gp = filepath.Join(home, "go")
+	}
+	return filepath.Join(gp, "bin")
+}
+
+func cargobin() string {
+	home, _ := os.UserHomeDir()
+	return filepath.Join(home, ".cargo", "bin")
+}
+
+// symlinkToPath creates a symlink in /usr/local/bin pointing to a binary
+// in a non-PATH directory (e.g. ~/go/bin). Fails silently if it can't.
+func symlinkToPath(command string, srcDir string) {
+	src := filepath.Join(srcDir, command)
+	dst := filepath.Join("/usr/local/bin", command)
+	// Don't overwrite an existing file
+	if _, err := os.Lstat(dst); err == nil {
+		return
+	}
+	os.Symlink(src, dst)
 }
 
 func runInstall(name string, args ...string) error {

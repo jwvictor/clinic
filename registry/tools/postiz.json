@@ -1,0 +1,23 @@
+{
+  "name": "postiz",
+  "command": "postiz",
+  "description": "Postiz — post and schedule to 20+ social platforms from one CLI",
+  "language": "node",
+  "category": "social",
+  "version_command": "postiz --version",
+  "version_pattern": "(\\S+)",
+  "install_methods": [
+    {
+      "type": "npm",
+      "platforms": ["macos", "linux"],
+      "package": "postiz",
+      "global": true
+    }
+  ],
+  "auth": {
+    "inject_type": "env",
+    "env_var": "POSTIZ_API_KEY",
+    "auth_hint": "Get your API key from https://app.postiz.com/settings/api or your self-hosted Postiz instance"
+  },
+  "skills_source": "gitroomhq/postiz-agent"
+}
