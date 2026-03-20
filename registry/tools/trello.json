@@ -1,0 +1,29 @@
+{
+  "name": "trello",
+  "command": "trello",
+  "description": "Trello CLI — boards, lists, cards, labels, checklists",
+  "language": "node",
+  "category": "productivity",
+  "version_command": "trello --version",
+  "version_pattern": "(\\S+)",
+  "install_methods": [
+    {
+      "type": "npm",
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "package": "trello-cli",
+      "global": true
+    }
+  ],
+  "auth": {
+    "inject_type": "env",
+    "env_var": "TRELLO_TOKEN",
+    "auth_check": "trello card:list",
+    "auth_check_pattern": "name|No cards",
+    "auth_command": "trello auth",
+    "auth_hint": "Get your API key and token from https://trello.com/app-key"
+  },
+  "skill_template": ""
+}
