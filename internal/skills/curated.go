@@ -296,34 +296,6 @@ If auth fails, run ` + "`clinic auth x-cli`" + ` or ` + "`clinic doctor`" + `.
 
 	// "postiz" uses vendor skills from gitroomhq/postiz-agent
 
-	"discordo": `---
-name: discord
-description: >
-  Use when the user needs to interact with Discord from the terminal — browse
-  servers, read channels, send messages. Discordo is a lightweight Discord TUI.
-allowed-tools: Bash(discordo:*)
----
-
-You have ` + "`discordo`" + ` (v{{.Version}}) installed{{if .AuthUser}} and authenticated{{end}}.
-
-## Key commands
-- ` + "`discordo`" + ` — launch the interactive TUI
-- Navigate with vim-style keybindings (j/k to move, Enter to select)
-- Ctrl+N to switch servers, Ctrl+L to switch channels
-- Type and press Enter to send messages
-
-## Conventions
-- Discordo is primarily an interactive TUI — it's best launched for the user to interact with directly
-- NEVER send messages to Discord channels without explicit user confirmation
-- Be aware that Discord tokens should never be logged or displayed
-{{- if .NeedsAuth}}
-
-## Auth
-Managed by Clinic. Token injected via ` + "`DISCORD_TOKEN`" + ` env var.
-If auth fails, run ` + "`clinic auth discordo`" + ` or ` + "`clinic doctor`" + `.
-{{- end}}
-`,
-
 	// "notion" uses vendor skills from 4ier/notion-cli
 
 	"slack": `---

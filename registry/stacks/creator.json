@@ -7,7 +7,6 @@
     "yt-dlp",
     "circumflex",
     "notion",
-    "slack",
-    "discordo"
+    "slack"
   ]
 }
