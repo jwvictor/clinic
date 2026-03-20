@@ -388,40 +388,6 @@ You have ` + "`yt-dlp`" + ` (v{{.Version}}) installed.
 - Use ` + "`--cookies-from-browser chrome`" + ` if a video requires authentication
 `,
 
-	"ticker": `---
-name: ticker
-description: >
-  Use when the user needs real-time stock quotes, crypto prices, or portfolio
-  tracking in the terminal. Ticker is installed.
-allowed-tools: Bash(ticker:*)
----
-
-You have ` + "`ticker`" + ` (v{{.Version}}) installed.
-
-## Key commands
-- ` + "`ticker -w AAPL,GOOGL,MSFT`" + ` — watch specific stocks
-- ` + "`ticker -w BTC-USD,ETH-USD`" + ` — watch crypto prices
-- ` + "`ticker --config ~/.ticker.yaml`" + ` — use a config file for watchlists
-
-## Config file (~/.ticker.yaml)
-` + "```yaml" + `
-watchlist:
-  - symbol: AAPL
-    quantity: 10
-    cost: 150.00
-  - symbol: BTC-USD
-    quantity: 0.5
-    cost: 30000.00
-` + "```" + `
-
-## Conventions
-- Use Yahoo Finance ticker symbols (e.g., AAPL, GOOGL, BTC-USD, ETH-USD)
-- Crypto symbols use the ` + "`-USD`" + ` suffix (e.g., ` + "`BTC-USD`" + `, ` + "`ETH-USD`" + `)
-- Use a config file for persistent watchlists with position tracking
-- Data comes from Yahoo Finance — may have a slight delay for real-time quotes
-- Use ` + "`--sort change`" + ` to sort by daily change percentage
-`,
-
 	"circumflex": `---
 name: hackernews
 description: >
