@@ -28,7 +28,7 @@
     "inject_type": "env",
     "env_var": "NOTION_API_KEY",
     "auth_check": "notion auth status",
-    "auth_check_pattern": "authenticated|logged in",
+    "auth_check_pattern": "(?i)✓|(?<![Nn]ot )authenticated",
     "auth_command": "notion auth login",
     "auth_hint": "Create an integration at https://www.notion.so/my-integrations to get your token"
   },
