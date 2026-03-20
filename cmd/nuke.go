@@ -87,12 +87,14 @@ or run: rm $(which clinic))`,
 			}
 		}
 
-		// 2. Remove all skill files
+		// 2. Remove all skill files (including vendor skill directories)
 		fmt.Println()
-		for toolName := range lf.Tools {
-			if err := skills.Remove(toolName); err != nil {
-				fmt.Printf("  ⚠ Could not remove skills for %s: %s\n", toolName, err)
-			}
+		toolList := make([]string, 0, len(lf.Tools))
+		for name := range lf.Tools {
+			toolList = append(toolList, name)
+		}
+		if err := skills.RemoveAllSkills(toolList); err != nil {
+			fmt.Printf("  ⚠ Some skills could not be removed: %s\n", err)
 		}
 		fmt.Println("  ✓ Removed all skill files")
 

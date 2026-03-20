@@ -98,9 +98,10 @@ func FetchVendorSkills(tool registry.ToolDef) (int, error) {
 		installed++
 	}
 
-	// Track the actual skill directory names so SkillPath can be accurate
+	// Track the actual skill directory names for SkillPath and cleanup
 	if len(installedNames) > 0 {
 		vendorSkillNames[tool.Name] = installedNames[0]
+		TrackSkillDirs(tool.Name, installedNames)
 	}
 
 	// Clean up clone

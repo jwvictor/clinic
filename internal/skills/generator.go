@@ -1,6 +1,7 @@
 package skills
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -112,6 +113,9 @@ func Generate(tool registry.ToolDef, status installer.Status, authUser string, a
 		}
 	}
 
+	// Track in manifest for clean removal
+	TrackSkillDirs(tool.Name, []string{tool.Name})
+
 	if hasCurated {
 		return "curated skill", nil
 	}
@@ -119,14 +123,99 @@ func Generate(tool registry.ToolDef, status installer.Status, authUser string, a
 }
 
 // Remove deletes the skill directories for a tool across all platforms.
+// Also removes any vendor skill directories that were tracked in the manifest.
 func Remove(toolName string) error {
 	var lastErr error
+
+	// Remove the standard tool-named directory
 	for _, dir := range skillDirsForTool(toolName) {
 		if err := os.RemoveAll(dir); err != nil {
 			lastErr = err
 		}
 	}
+
+	// Remove any vendor skill directories tracked in the manifest
+	manifest := LoadManifest()
+	if dirs, ok := manifest[toolName]; ok {
+		for _, dirName := range dirs {
+			for _, root := range targetDirs() {
+				if err := os.RemoveAll(filepath.Join(root, dirName)); err != nil {
+					lastErr = err
+				}
+			}
+		}
+		delete(manifest, toolName)
+		SaveManifest(manifest)
+	}
+
 	return lastErr
+}
+
+// RemoveAllSkills removes every skill directory tracked in the manifest,
+// plus any tool-named directories. Used by clinic nuke.
+func RemoveAllSkills(toolNames []string) error {
+	var lastErr error
+
+	// Remove tool-named directories
+	for _, toolName := range toolNames {
+		for _, dir := range skillDirsForTool(toolName) {
+			if err := os.RemoveAll(dir); err != nil {
+				lastErr = err
+			}
+		}
+	}
+
+	// Remove all vendor skill directories from manifest
+	manifest := LoadManifest()
+	for _, dirs := range manifest {
+		for _, dirName := range dirs {
+			for _, root := range targetDirs() {
+				if err := os.RemoveAll(filepath.Join(root, dirName)); err != nil {
+					lastErr = err
+				}
+			}
+		}
+	}
+
+	// Clear the manifest
+	SaveManifest(map[string][]string{})
+
+	return lastErr
+}
+
+// Manifest tracks which skill directories were installed per tool.
+// Stored at ~/.clinic/skills-manifest.json.
+
+func manifestPath() string {
+	home, _ := os.UserHomeDir()
+	return filepath.Join(home, ".clinic", "skills-manifest.json")
+}
+
+// LoadManifest reads the skills manifest.
+func LoadManifest() map[string][]string {
+	data, err := os.ReadFile(manifestPath())
+	if err != nil {
+		return map[string][]string{}
+	}
+	var m map[string][]string
+	if err := json.Unmarshal(data, &m); err != nil {
+		return map[string][]string{}
+	}
+	return m
+}
+
+// SaveManifest writes the skills manifest.
+func SaveManifest(m map[string][]string) {
+	data, _ := json.MarshalIndent(m, "", "  ")
+	os.MkdirAll(filepath.Dir(manifestPath()), 0755)
+	os.WriteFile(manifestPath(), data, 0644)
+}
+
+// TrackSkillDirs records which directories were installed for a tool.
+func TrackSkillDirs(toolName string, dirNames []string) {
+	manifest := LoadManifest()
+	manifest[toolName] = dirNames
+	SaveManifest(manifest)
 }
 
 // SkillPath returns the primary skill path (OpenClaw) for display purposes.
