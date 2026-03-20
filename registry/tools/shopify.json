@@ -23,7 +23,7 @@
   "auth": {
     "inject_type": "env",
     "env_var": "SHOPIFY_CLI_PARTNERS_TOKEN",
-    "auth_check": "shopify auth info",
+    "auth_check": "shopify auth logout --help",
     "auth_command": "shopify auth login"
   }
 }

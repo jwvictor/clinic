@@ -5,7 +5,7 @@
   "language": "node",
   "category": "productivity",
   "version_command": "linear --version",
-  "version_pattern": "(\\S+)",
+  "version_pattern": "(\\d+\\.\\d+\\.\\d+)",
   "install_methods": [
     {
       "type": "brew",
@@ -22,7 +22,7 @@
   "auth": {
     "inject_type": "env",
     "env_var": "LINEAR_API_KEY",
-    "auth_check": "linear me",
+    "auth_check": "linear auth",
     "auth_command": "linear auth login"
   },
   "skills_source": "schpet/linear-cli"
