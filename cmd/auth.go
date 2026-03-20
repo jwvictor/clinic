@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 	"os/exec"
@@ -89,6 +90,17 @@ func runAuth(toolName string) error {
 		return nil
 	}
 
+	// If the tool has env prompts (no interactive auth command), use our own flow
+	if len(tool.Auth.AuthEnvPrompts) > 0 {
+		return runEnvAuth(toolName, tool)
+	}
+
+	// If there's no auth command at all but there's an env var, fall back to
+	// prompting for the single env var
+	if tool.Auth.AuthCmd == "" && tool.Auth.EnvVar != "" {
+		return runEnvAuth(toolName, tool)
+	}
+
 	// Determine which auth command to use
 	headless := authHeadless || detectHeadless()
 	authCommand := tool.Auth.AuthCmd
@@ -109,6 +121,11 @@ func runAuth(toolName string) error {
 		fmt.Printf("Authenticating %s...\n\n", toolName)
 	}
 
+	// Show hint if available
+	if tool.Auth.AuthHint != "" {
+		fmt.Printf("ℹ %s\n\n", tool.Auth.AuthHint)
+	}
+
 	// Run the auth command interactively
 	parts := strings.Fields(authCommand)
 	c := exec.Command(parts[0], parts[1:]...)
@@ -121,8 +138,70 @@ func runAuth(toolName string) error {
 	}
 
 	fmt.Printf("\n✓ %s authenticated\n", toolName)
+	generateSkillsAfterAuth(tool)
+	checkShellenvSetup()
+	return nil
+}
 
-	// Generate skills now that the tool is authenticated
+// runEnvAuth handles authentication for tools that only need env vars
+// (no interactive auth command). Prompts the user for each value and
+// saves to ~/.clinic/env/<tool>.env.
+func runEnvAuth(toolName string, tool registry.ToolDef) error {
+	fmt.Printf("Authenticating %s\n\n", toolName)
+
+	if tool.Auth.AuthHint != "" {
+		fmt.Printf("ℹ %s\n\n", tool.Auth.AuthHint)
+	}
+
+	reader := bufio.NewReader(os.Stdin)
+	envVars := map[string]string{}
+
+	// If there are explicit prompts, use them
+	if len(tool.Auth.AuthEnvPrompts) > 0 {
+		for _, prompt := range tool.Auth.AuthEnvPrompts {
+			label := prompt.Label
+			if !prompt.Required {
+				label += " (optional)"
+			}
+			fmt.Printf("  %s: ", label)
+			value, _ := reader.ReadString('\n')
+			value = strings.TrimSpace(value)
+
+			if value == "" && prompt.Required {
+				return fmt.Errorf("%s is required", prompt.Label)
+			}
+			if value != "" {
+				envVars[prompt.EnvVar] = value
+				os.Setenv(prompt.EnvVar, value) // set for current process
+			}
+		}
+	} else {
+		// Fallback: single env var prompt
+		fmt.Printf("  %s: ", tool.Auth.EnvVar)
+		value, _ := reader.ReadString('\n')
+		value = strings.TrimSpace(value)
+		if value == "" {
+			return fmt.Errorf("%s is required", tool.Auth.EnvVar)
+		}
+		envVars[tool.Auth.EnvVar] = value
+		os.Setenv(tool.Auth.EnvVar, value)
+	}
+
+	// Save to ~/.clinic/env/<tool>.env
+	if err := config.SaveToolEnv(toolName, envVars); err != nil {
+		return fmt.Errorf("saving credentials: %w", err)
+	}
+
+	fmt.Printf("\n✓ %s authenticated\n", toolName)
+	fmt.Printf("  Saved to ~/.clinic/env/%s.env\n", toolName)
+
+	generateSkillsAfterAuth(tool)
+	checkShellenvSetup()
+	return nil
+}
+
+// generateSkillsAfterAuth generates skills for a tool after successful auth.
+func generateSkillsAfterAuth(tool registry.ToolDef) {
 	status := installer.Detect(tool)
 	health := doctor.Check(tool)
 	if desc, err := skills.Generate(tool, status, health.AuthUser, true); err != nil {
@@ -130,8 +209,17 @@ func runAuth(toolName string) error {
 	} else {
 		fmt.Printf("✓ Skills installed: %s (%s)\n", skills.SkillPath(tool.Name), desc)
 	}
+}
 
-	return nil
+// checkShellenvSetup checks if eval "$(clinic shellenv)" is in the user's
+// shell RC file, and suggests adding it if not.
+func checkShellenvSetup() {
+	if config.HasShellenvInRC() {
+		return
+	}
+	rcFile := config.ShellRCFile()
+	fmt.Printf("\n  To load credentials in new shells, add this to %s:\n", rcFile)
+	fmt.Printf("    eval \"$(clinic shellenv)\"\n")
 }
 
 // detectHeadless returns true if we're likely in a headless environment

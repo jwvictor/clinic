@@ -3,8 +3,6 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"os/exec"
-	"strings"
 
 	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
@@ -135,7 +133,8 @@ var initCmd = &cobra.Command{
 				fmt.Printf("  ✓ Authenticated (%s)\n", health.AuthUser)
 			} else {
 				fmt.Printf("  ⚠ Not authenticated\n")
-				if tool.Auth.AuthCmd != "" {
+				// Both interactive auth tools AND env-var-only tools go in the list
+				if tool.Auth.AuthCmd != "" || tool.Auth.EnvVar != "" || len(tool.Auth.AuthEnvPrompts) > 0 {
 					needsAuth = append(needsAuth, unauthTool{
 						name:     tool.Name,
 						tool:     tool,
@@ -143,14 +142,6 @@ var initCmd = &cobra.Command{
 						authCmd:  tool.Auth.AuthCmd,
 						authHint: tool.Auth.AuthHint,
 					})
-				} else if tool.Auth.EnvVar != "" {
-					// Env-var-only tool — tell the user what to do
-					hint := tool.Auth.AuthHint
-					if hint == "" {
-						hint = fmt.Sprintf("export %s=\"your-key-here\"", tool.Auth.EnvVar)
-					}
-					fmt.Printf("    ℹ %s\n", hint)
-					fmt.Printf("    Then run: clinic generate\n")
 				}
 			}
 
@@ -201,39 +192,19 @@ var initCmd = &cobra.Command{
 
 			if len(selectedAuth) > 0 {
 				fmt.Println()
-				authMap := map[string]unauthTool{}
-				for _, t := range needsAuth {
-					authMap[t.name] = t
-				}
 				for _, name := range selectedAuth {
-					t := authMap[name]
-					fmt.Printf("─── Authenticating %s ───\n", t.name)
-					if t.authHint != "" {
-						fmt.Printf("  ℹ %s\n", t.authHint)
-					}
-					fmt.Println()
-					parts := strings.Fields(t.authCmd)
-					c := exec.Command(parts[0], parts[1:]...)
-					c.Stdin = os.Stdin
-					c.Stdout = os.Stdout
-					c.Stderr = os.Stderr
-					if err := c.Run(); err != nil {
-						fmt.Printf("\n⚠ %s auth failed: %s\n\n", t.name, err)
+					fmt.Printf("─── %s ───\n", name)
+					if err := runAuth(name); err != nil {
+						fmt.Printf("⚠ %s\n\n", err)
 					} else {
-						fmt.Printf("\n✓ %s authenticated\n", t.name)
-						// Now generate skills for the newly authed tool
-						health := doctor.Check(t.tool)
-						if desc, err := skills.Generate(t.tool, t.status, health.AuthUser, true); err != nil {
-							fmt.Printf("  ⚠ Skills: %s\n\n", err)
-						} else {
-							fmt.Printf("  ✓ Skills installed: %s (%s)\n\n", skills.SkillPath(t.name), desc)
-						}
+						fmt.Println()
 					}
 				}
 			}
 		}
 
-		fmt.Println("Your workspace is agent-ready. 🤝")
+		checkShellenvSetup()
+		fmt.Println("\nYour workspace is agent-ready. 🤝")
 		return nil
 	},
 }

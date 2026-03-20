@@ -2,9 +2,11 @@ package config
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 	"runtime"
+	"strings"
 )
 
 // ClinicHome returns the path to ~/.clinic/
@@ -28,6 +30,11 @@ func CacheDir() string {
 	return filepath.Join(ClinicHome(), "cache")
 }
 
+// EnvDir returns ~/.clinic/env/
+func EnvDir() string {
+	return filepath.Join(ClinicHome(), "env")
+}
+
 // EnsureDirs creates the clinic directory structure if it doesn't exist.
 func EnsureDirs() error {
 	dirs := []string{
@@ -35,6 +42,7 @@ func EnsureDirs() error {
 		BinDir(),
 		VersionsDir(),
 		CacheDir(),
+		EnvDir(),
 		filepath.Join(CacheDir(), "registry"),
 		filepath.Join(CacheDir(), "downloads"),
 	}
@@ -95,6 +103,72 @@ func LoadLockfile() (*Lockfile, error) {
 		lf.Tools = make(map[string]ToolLock)
 	}
 	return &lf, nil
+}
+
+// SaveToolEnv writes env vars for a tool to ~/.clinic/env/<tool>.env
+func SaveToolEnv(toolName string, vars map[string]string) error {
+	if err := os.MkdirAll(EnvDir(), 0700); err != nil {
+		return err
+	}
+	var lines []string
+	for k, v := range vars {
+		lines = append(lines, fmt.Sprintf("export %s=%q", k, v))
+	}
+	content := strings.Join(lines, "\n") + "\n"
+	return os.WriteFile(filepath.Join(EnvDir(), toolName+".env"), []byte(content), 0600)
+}
+
+// LoadAllEnvFiles reads all .env files from ~/.clinic/env/ and returns
+// shell export lines suitable for eval.
+func LoadAllEnvFiles() (string, error) {
+	entries, err := os.ReadDir(EnvDir())
+	if err != nil {
+		if os.IsNotExist(err) {
+			return "", nil
+		}
+		return "", err
+	}
+	var lines []string
+	for _, e := range entries {
+		if e.IsDir() || !strings.HasSuffix(e.Name(), ".env") {
+			continue
+		}
+		data, err := os.ReadFile(filepath.Join(EnvDir(), e.Name()))
+		if err != nil {
+			continue
+		}
+		lines = append(lines, strings.TrimSpace(string(data)))
+	}
+	return strings.Join(lines, "\n"), nil
+}
+
+// ShellRCFile returns the path to the user's shell RC file based on $SHELL.
+func ShellRCFile() string {
+	home, _ := os.UserHomeDir()
+	shell := os.Getenv("SHELL")
+	switch {
+	case strings.Contains(shell, "zsh"):
+		return filepath.Join(home, ".zshrc")
+	case strings.Contains(shell, "bash"):
+		// Prefer .bash_profile on macOS, .bashrc on Linux
+		if runtime.GOOS == "darwin" {
+			return filepath.Join(home, ".bash_profile")
+		}
+		return filepath.Join(home, ".bashrc")
+	case strings.Contains(shell, "fish"):
+		return filepath.Join(home, ".config", "fish", "config.fish")
+	default:
+		return filepath.Join(home, ".profile")
+	}
+}
+
+// HasShellenvInRC checks if eval "$(clinic shellenv)" is already in the shell RC file.
+func HasShellenvInRC() bool {
+	data, err := os.ReadFile(ShellRCFile())
+	if err != nil {
+		return false
+	}
+	return strings.Contains(string(data), "clinic shellenv")
 }
 
 // Save writes the lockfile to disk.

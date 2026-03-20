@@ -17,7 +17,10 @@
   "auth": {
     "inject_type": "env",
     "env_var": "POSTIZ_API_KEY",
-    "auth_hint": "Get your API key from https://app.postiz.com/settings/api or your self-hosted Postiz instance"
+    "auth_hint": "Get your API key from https://app.postiz.com/settings/api or your self-hosted Postiz instance",
+    "auth_env_prompts": [
+      {"env_var": "POSTIZ_API_KEY", "label": "Postiz API Key", "required": true, "secret": true}
+    ]
   },
   "skills_source": "gitroomhq/postiz-agent"
 }

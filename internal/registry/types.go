@@ -37,13 +37,22 @@ type InstallMethod struct {
 
 // AuthDef defines how to authenticate a tool.
 type AuthDef struct {
-	InjectType      string `json:"inject_type"`                        // env, file, none
-	EnvVar          string `json:"env_var,omitempty"`
-	AuthCheck       string `json:"auth_check,omitempty"`               // command to check if authed
-	AuthCheckPattern string `json:"auth_check_pattern,omitempty"`      // regex that must match auth_check output for auth to be OK
-	AuthCmd         string `json:"auth_command,omitempty"`             // command to authenticate (interactive/browser)
-	AuthCmdHeadless string `json:"auth_command_headless,omitempty"`    // command to authenticate (no browser, device-code flow)
-	AuthHint        string `json:"auth_hint,omitempty"`                // message shown before running auth command (e.g., where to get a token)
+	InjectType      string          `json:"inject_type"`                        // env, file, none
+	EnvVar          string          `json:"env_var,omitempty"`
+	AuthCheck       string          `json:"auth_check,omitempty"`               // command to check if authed
+	AuthCheckPattern string         `json:"auth_check_pattern,omitempty"`      // regex that must match auth_check output for auth to be OK
+	AuthCmd         string          `json:"auth_command,omitempty"`             // command to authenticate (interactive/browser)
+	AuthCmdHeadless string          `json:"auth_command_headless,omitempty"`    // command to authenticate (no browser, device-code flow)
+	AuthHint        string          `json:"auth_hint,omitempty"`                // message shown before running auth command (e.g., where to get a token)
+	AuthEnvPrompts  []AuthEnvPrompt `json:"auth_env_prompts,omitempty"`         // for env-var-only tools: prompt user for these values
+}
+
+// AuthEnvPrompt defines a single env var to prompt the user for.
+type AuthEnvPrompt struct {
+	EnvVar   string `json:"env_var"`
+	Label    string `json:"label"`
+	Required bool   `json:"required"`
+	Secret   bool   `json:"secret"` // mask input
 }
 
 // StackDef defines a curated bundle of tools.

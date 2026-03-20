@@ -17,6 +17,10 @@
   "auth": {
     "inject_type": "env",
     "env_var": "DD_API_KEY",
-    "auth_hint": "Set DD_API_KEY (and optionally DD_APP_KEY) from Datadog → Organization Settings → API Keys"
+    "auth_hint": "Get your keys from Datadog → Organization Settings → API Keys",
+    "auth_env_prompts": [
+      {"env_var": "DD_API_KEY", "label": "Datadog API Key", "required": true, "secret": true},
+      {"env_var": "DD_APP_KEY", "label": "Datadog App Key", "required": false, "secret": true}
+    ]
   }
 }
