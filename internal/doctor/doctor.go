@@ -54,8 +54,33 @@ func checkAuth(command string) (bool, string) {
 	if err != nil {
 		return false, ""
 	}
+	output := strings.TrimSpace(string(out))
+	lower := strings.ToLower(output)
+
+	// Many CLIs exit 0 even when not authenticated — check the output for
+	// common failure phrases.
+	failPhrases := []string{
+		"not logged in",
+		"not authenticated",
+		"no account",
+		"no auth",
+		"login required",
+		"unauthenticated",
+		"unauthorized",
+		"please log in",
+		"please login",
+		"to log in",
+		"to login",
+		"run `slack login`",
+	}
+	for _, phrase := range failPhrases {
+		if strings.Contains(lower, phrase) {
+			return false, ""
+		}
+	}
+
 	// Extract first line as a rough "user" indicator
-	lines := strings.Split(strings.TrimSpace(string(out)), "\n")
+	lines := strings.Split(output, "\n")
 	if len(lines) > 0 {
 		return true, truncate(lines[0], 50)
 	}

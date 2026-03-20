@@ -29,6 +29,7 @@ CATEGORY_LABELS = {
     "media": "Media",
     "finance": "Finance",
     "news": "News",
+    "ecommerce": "E-Commerce",
 }
 
 def main():

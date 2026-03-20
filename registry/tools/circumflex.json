@@ -5,7 +5,7 @@
   "language": "go",
   "category": "news",
   "version_command": "clx --version",
-  "version_pattern": "(\\S+)",
+  "version_pattern": "clx version (\\S+)",
   "install_methods": [
     {
       "type": "brew",

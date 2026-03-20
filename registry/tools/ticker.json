@@ -5,7 +5,7 @@
   "language": "go",
   "category": "finance",
   "version_command": "ticker --version",
-  "version_pattern": "(\\S+)",
+  "version_pattern": "ticker version (\\S+)",
   "install_methods": [
     {
       "type": "brew",

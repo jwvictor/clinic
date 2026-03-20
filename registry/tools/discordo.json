@@ -4,8 +4,8 @@
   "description": "Discord terminal client — browse servers, channels, send messages",
   "language": "go",
   "category": "social",
-  "version_command": "discordo --version",
-  "version_pattern": "(\\S+)",
+  "version_command": "",
+  "version_pattern": "",
   "install_methods": [
     {
       "type": "go_install",

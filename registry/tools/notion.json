@@ -5,7 +5,7 @@
   "language": "go",
   "category": "productivity",
   "version_command": "notion --version",
-  "version_pattern": "(\\S+)",
+  "version_pattern": "notion version (\\S+)",
   "install_methods": [
     {
       "type": "brew",
