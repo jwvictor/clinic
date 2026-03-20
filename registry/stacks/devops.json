@@ -12,6 +12,8 @@
     "vault",
     "gh",
     "sentry-cli",
+    "datadog",
+    "rclone",
     "jq"
   ]
 }

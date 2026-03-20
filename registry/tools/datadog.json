@@ -1,0 +1,22 @@
+{
+  "name": "datadog",
+  "command": "datadog-ci",
+  "description": "Datadog CI CLI — upload test results, source maps, deploy markers",
+  "language": "node",
+  "category": "observability",
+  "version_command": "datadog-ci version",
+  "version_pattern": "(\\S+)",
+  "install_methods": [
+    {
+      "type": "npm",
+      "platforms": ["macos", "linux"],
+      "package": "@datadog/datadog-ci",
+      "global": true
+    }
+  ],
+  "auth": {
+    "inject_type": "env",
+    "env_var": "DD_API_KEY",
+    "auth_check": "datadog-ci version"
+  }
+}

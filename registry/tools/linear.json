@@ -1,0 +1,29 @@
+{
+  "name": "linear",
+  "command": "linear",
+  "description": "Linear CLI — create, list, and manage issues and projects",
+  "language": "node",
+  "category": "productivity",
+  "version_command": "linear --version",
+  "version_pattern": "(\\S+)",
+  "install_methods": [
+    {
+      "type": "brew",
+      "platforms": ["macos", "linux"],
+      "formula": "schpet/tap/linear"
+    },
+    {
+      "type": "npm",
+      "platforms": ["macos", "linux"],
+      "package": "@schpet/linear-cli",
+      "global": true
+    }
+  ],
+  "auth": {
+    "inject_type": "env",
+    "env_var": "LINEAR_API_KEY",
+    "auth_check": "linear me",
+    "auth_command": "linear auth login"
+  },
+  "skills_source": "schpet/linear-cli"
+}

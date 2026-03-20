@@ -1,0 +1,29 @@
+{
+  "name": "shopify",
+  "command": "shopify",
+  "description": "Shopify CLI — build apps, manage themes, deploy to Shopify stores",
+  "language": "node",
+  "category": "ecommerce",
+  "version_command": "shopify version",
+  "version_pattern": "(\\S+)$",
+  "install_methods": [
+    {
+      "type": "npm",
+      "platforms": ["macos", "linux"],
+      "package": "@shopify/cli",
+      "global": true,
+      "requires": "node >= 18"
+    },
+    {
+      "type": "brew",
+      "platforms": ["macos"],
+      "formula": "shopify-cli"
+    }
+  ],
+  "auth": {
+    "inject_type": "env",
+    "env_var": "SHOPIFY_CLI_PARTNERS_TOKEN",
+    "auth_check": "shopify auth info",
+    "auth_command": "shopify auth login"
+  }
+}

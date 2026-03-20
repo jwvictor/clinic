@@ -10,6 +10,7 @@
     "sentry-cli",
     "gws",
     "jq",
-    "ngrok"
+    "ngrok",
+    "linear"
   ]
 }

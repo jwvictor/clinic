@@ -1,0 +1,28 @@
+{
+  "name": "rclone",
+  "command": "rclone",
+  "description": "Sync files to 70+ cloud storage providers (S3, GCS, Dropbox, OneDrive, etc.)",
+  "language": "go",
+  "category": "utility",
+  "version_command": "rclone version",
+  "version_pattern": "rclone v(\\S+)",
+  "install_methods": [
+    {
+      "type": "brew",
+      "platforms": ["macos", "linux"],
+      "formula": "rclone"
+    },
+    {
+      "type": "curl_script",
+      "platforms": ["linux"],
+      "script_url": "https://rclone.org/install.sh"
+    }
+  ],
+  "auth": {
+    "inject_type": "env",
+    "env_var": "RCLONE_CONFIG_PASS",
+    "auth_check": "rclone listremotes",
+    "auth_command": "rclone config",
+    "auth_command_headless": "rclone authorize"
+  }
+}

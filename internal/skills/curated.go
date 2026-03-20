@@ -447,6 +447,113 @@ You have ` + "`clx`" + ` (circumflex, v{{.Version}}) installed.
 - Use it when the user asks about tech news, trending topics, or HN discussions
 `,
 
+	// "linear" uses vendor skills from schpet/linear-cli
+
+	"rclone": `---
+name: rclone
+description: >
+  Use when the user needs to sync, copy, or manage files across cloud storage
+  providers — S3, Google Cloud Storage, Dropbox, OneDrive, SFTP, and 70+ others.
+  rclone is installed.
+allowed-tools: Bash(rclone:*)
+---
+
+You have ` + "`rclone`" + ` (v{{.Version}}) installed.
+
+## Key commands
+- ` + "`rclone listremotes`" + ` — show configured remotes
+- ` + "`rclone ls remote:path`" + ` — list files
+- ` + "`rclone copy src:path dst:path`" + ` — copy files (non-destructive)
+- ` + "`rclone sync src:path dst:path`" + ` — sync (makes dst match src, deletes extras)
+- ` + "`rclone move src:path dst:path`" + ` — move files
+- ` + "`rclone mkdir remote:path`" + ` — create directory
+- ` + "`rclone check src:path dst:path`" + ` — check if files match
+- ` + "`rclone mount remote:path /local/mount`" + ` — mount remote as local filesystem
+- ` + "`rclone config`" + ` — interactive remote configuration
+
+## Conventions
+- Use ` + "`--dry-run`" + ` before any ` + "`sync`" + ` or destructive operation
+- NEVER run ` + "`rclone sync`" + ` without user confirmation — it deletes files at the destination
+- Use ` + "`rclone copy`" + ` instead of ` + "`sync`" + ` when you just want to add files
+- Use ` + "`--progress`" + ` or ` + "`-P`" + ` to show transfer progress
+- Use ` + "`--filter`" + ` or ` + "`--include/--exclude`" + ` to limit what gets transferred
+- Remote paths use ` + "`remote:path`" + ` format (e.g., ` + "`s3:mybucket/folder`" + `)
+{{- if .NeedsAuth}}
+
+## Auth
+Each remote is configured separately via ` + "`rclone config`" + `.
+Run ` + "`clinic auth rclone`" + ` or ` + "`rclone config`" + ` to add a new remote.
+{{- end}}
+`,
+
+	"shopify": `---
+name: shopify
+description: >
+  Use when the user needs to build Shopify apps, manage themes, or interact
+  with Shopify stores. The Shopify CLI is installed.
+allowed-tools: Bash(shopify:*)
+---
+
+You have the ` + "`shopify`" + ` CLI (v{{.Version}}) installed{{if .AuthUser}} and authenticated{{end}}.
+
+## Key commands
+- ` + "`shopify app dev`" + ` — start local app development server
+- ` + "`shopify app deploy`" + ` — deploy app to Shopify
+- ` + "`shopify app generate extension`" + ` — scaffold a new extension
+- ` + "`shopify theme dev`" + ` — start local theme development with hot reload
+- ` + "`shopify theme push`" + ` — push theme to store
+- ` + "`shopify theme pull`" + ` — pull theme from store
+- ` + "`shopify theme list`" + ` — list themes on a store
+- ` + "`shopify hydrogen dev`" + ` — develop Hydrogen storefront locally
+- ` + "`shopify auth login`" + ` — authenticate with Shopify
+
+## Conventions
+- Use ` + "`--store`" + ` flag or ` + "`SHOPIFY_FLAG_STORE`" + ` env var to target a specific store
+- Use ` + "`shopify theme dev`" + ` for live preview during theme development
+- For CI/CD, set ` + "`SHOPIFY_CLI_PARTNERS_TOKEN`" + ` (apps) or ` + "`SHOPIFY_CLI_THEME_TOKEN`" + ` (themes)
+- ` + "`shopify.app.toml`" + ` defines app configuration
+{{- if .NeedsAuth}}
+
+## Auth
+Managed by Clinic. Token injected via ` + "`SHOPIFY_CLI_PARTNERS_TOKEN`" + ` env var.
+If auth fails, run ` + "`clinic auth shopify`" + ` or ` + "`clinic doctor`" + `.
+{{- end}}
+`,
+
+	"datadog": `---
+name: datadog
+description: >
+  Use when the user needs to interact with Datadog from CI/CD — upload test
+  results, source maps, deploy markers, or run Synthetic tests. The datadog-ci
+  CLI is installed.
+allowed-tools: Bash(datadog-ci:*)
+---
+
+You have ` + "`datadog-ci`" + ` (v{{.Version}}) installed.
+
+## Key commands
+- ` + "`datadog-ci sourcemaps upload`" + ` — upload JS source maps for error tracking
+- ` + "`datadog-ci junit upload`" + ` — upload JUnit test results
+- ` + "`datadog-ci synthetics run-tests`" + ` — trigger Synthetic monitoring tests
+- ` + "`datadog-ci tag`" + ` — add tags to CI pipeline traces
+- ` + "`datadog-ci deployment mark`" + ` — mark a deployment in Datadog
+- ` + "`datadog-ci dsyms upload`" + ` — upload iOS dSYM files for crash symbolication
+- ` + "`datadog-ci git-metadata upload`" + ` — upload git metadata for linking commits
+
+## Conventions
+- Requires ` + "`DD_API_KEY`" + ` for all commands
+- Some commands also need ` + "`DD_APP_KEY`" + `
+- Set ` + "`DD_SITE`" + ` for non-US regions (e.g., ` + "`datadoghq.eu`" + `, ` + "`us5.datadoghq.com`" + `)
+- Designed for CI pipelines — all config is via env vars, no interactive login
+- NEVER log or display API keys
+{{- if .NeedsAuth}}
+
+## Auth
+Purely env-var based. Set ` + "`DD_API_KEY`" + ` and optionally ` + "`DD_APP_KEY`" + `.
+Get keys from Datadog → Organization Settings → API Keys.
+{{- end}}
+`,
+
 	"fly": `---
 name: fly
 description: >
