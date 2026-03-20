@@ -1,12 +1,12 @@
 package cmd
 
 import (
-	"bufio"
 	"fmt"
 	"os"
 	"os/exec"
 	"strings"
 
+	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
 	"github.com/togglemedia/clinic/internal/config"
 	"github.com/togglemedia/clinic/internal/doctor"
@@ -26,7 +26,11 @@ var initCmd = &cobra.Command{
 			return fmt.Errorf("creating clinic directories: %w", err)
 		}
 
-		reg := registry.Load()
+		// Force-refresh registry to pick up latest tool definitions
+		reg, _ := registry.ForceRefresh()
+		if reg == nil {
+			reg = registry.Load() // fall back to cache/embedded
+		}
 
 		if initStack == "" {
 			fmt.Println("Available stacks:")
@@ -126,24 +130,37 @@ var initCmd = &cobra.Command{
 
 		// Offer to authenticate tools that need it
 		if len(needsAuth) > 0 {
-			fmt.Printf("The following tools need authentication:\n\n")
+			// Build options for multi-select
+			options := make([]huh.Option[string], len(needsAuth))
 			for i, t := range needsAuth {
-				fmt.Printf("  %d. %s\n", i+1, t.name)
+				options[i] = huh.NewOption(t.name, t.name)
 			}
-			fmt.Println()
-			fmt.Printf("Which tools to authenticate? (e.g. 1,3 / all / none): ")
 
-			reader := bufio.NewReader(os.Stdin)
-			answer, _ := reader.ReadString('\n')
-			answer = strings.TrimSpace(strings.ToLower(answer))
+			var selected []string
+			form := huh.NewForm(
+				huh.NewGroup(
+					huh.NewMultiSelect[string]().
+						Title("Which tools do you want to authenticate?").
+						Description("Space to toggle, Enter to confirm").
+						Options(options...).
+						Value(&selected),
+				),
+			)
 
-			// Parse selection
-			selected := parseSelection(answer, len(needsAuth))
+			if err := form.Run(); err != nil {
+				// User cancelled (ctrl+c), skip auth
+				fmt.Println()
+			}
 
 			if len(selected) > 0 {
 				fmt.Println()
-				for _, idx := range selected {
-					t := needsAuth[idx]
+				// Build lookup for quick access
+				authMap := map[string]unauthTool{}
+				for _, t := range needsAuth {
+					authMap[t.name] = t
+				}
+				for _, name := range selected {
+					t := authMap[name]
 					fmt.Printf("─── Authenticating %s ───\n", t.name)
 					if t.authHint != "" {
 						fmt.Printf("  ℹ %s\n", t.authHint)
@@ -166,35 +183,6 @@ var initCmd = &cobra.Command{
 		fmt.Println("Your workspace is agent-ready. 🤝")
 		return nil
 	},
-}
-
-// parseSelection parses user input like "1,3,5", "all", or "none" into
-// a slice of 0-based indices.
-func parseSelection(input string, total int) []int {
-	if input == "none" || input == "n" || input == "" {
-		return nil
-	}
-	if input == "all" || input == "a" {
-		indices := make([]int, total)
-		for i := range indices {
-			indices[i] = i
-		}
-		return indices
-	}
-	var indices []int
-	for _, part := range strings.Split(input, ",") {
-		part = strings.TrimSpace(part)
-		n := 0
-		for _, c := range part {
-			if c >= '0' && c <= '9' {
-				n = n*10 + int(c-'0')
-			}
-		}
-		if n >= 1 && n <= total {
-			indices = append(indices, n-1)
-		}
-	}
-	return indices
 }
 
 func init() {
