@@ -1,0 +1,27 @@
+{
+  "name": "rx-ga4",
+  "command": "rx",
+  "description": "Google Analytics 4 — reports, realtime active users, properties",
+  "language": "go",
+  "category": "analytics",
+  "version_command": "rx --version",
+  "version_pattern": "rx version (\\S+)",
+  "install_methods": [
+    {
+      "type": "go_install",
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "package": "github.com/togglemedia/rx@latest"
+    }
+  ],
+  "auth": {
+    "inject_type": "file",
+    "auth_check": "rx ga4 auth status",
+    "auth_check_pattern": "authenticated",
+    "auth_command": "rx ga4 auth login",
+    "auth_hint": "First run 'rx ga4 auth setup --client-id=YOUR_ID' with an OAuth2 Desktop client from https://console.cloud.google.com/apis/credentials"
+  },
+  "skill_template": ""
+}

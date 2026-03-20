@@ -1,11 +1,11 @@
 {
-  "name": "mj-discord",
-  "command": "mj",
+  "name": "rx-discord",
+  "command": "rx",
   "description": "Discord — servers, channels, messages, send messages",
   "language": "go",
   "category": "social",
-  "version_command": "mj --version",
-  "version_pattern": "mj version (\\S+)",
+  "version_command": "rx --version",
+  "version_pattern": "rx version (\\S+)",
   "install_methods": [
     {
       "type": "go_install",
@@ -13,15 +13,15 @@
         "macos",
         "linux"
       ],
-      "package": "github.com/togglemedia/mj@latest"
+      "package": "github.com/togglemedia/rx@latest"
     }
   ],
   "auth": {
     "inject_type": "env",
     "env_var": "DISCORD_BOT_TOKEN",
-    "auth_check": "mj discord auth status",
+    "auth_check": "rx discord auth status",
     "auth_check_pattern": "authenticated",
-    "auth_command": "mj discord auth login",
+    "auth_command": "rx discord auth login",
     "auth_hint": "Create a bot at https://discord.com/developers/applications and paste the token"
   },
   "skill_template": ""
