@@ -12,8 +12,13 @@ import (
 	"github.com/togglemedia/clinic/internal/registry"
 )
 
+// vendorSkillNames maps tool name → actual vendor skill directory name.
+// e.g., "notion" → "notion-cli" when the vendor repo uses skills/notion-cli/.
+var vendorSkillNames = map[string]string{}
+
 // FetchVendorSkills clones a vendor repo's skills directory and installs
 // all SKILL.md files to every target agent directory.
+// Returns the count of skills installed and the name of the first skill directory.
 func FetchVendorSkills(tool registry.ToolDef) (int, error) {
 	if tool.SkillsSource == "" {
 		return 0, fmt.Errorf("no skills source defined for %s", tool.Name)
@@ -72,6 +77,7 @@ func FetchVendorSkills(tool registry.ToolDef) (int, error) {
 	}
 
 	installed := 0
+	var installedNames []string
 	for _, skillSrcDir := range skillDirsToCopy {
 		skillName := filepath.Base(skillSrcDir)
 
@@ -83,7 +89,13 @@ func FetchVendorSkills(tool registry.ToolDef) (int, error) {
 				continue
 			}
 		}
+		installedNames = append(installedNames, skillName)
 		installed++
+	}
+
+	// Track the actual skill directory names so SkillPath can be accurate
+	if len(installedNames) > 0 {
+		vendorSkillNames[tool.Name] = installedNames[0]
 	}
 
 	// Clean up clone

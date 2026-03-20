@@ -122,7 +122,12 @@ func Remove(toolName string) error {
 // SkillPath returns the primary skill path (OpenClaw) for display purposes.
 func SkillPath(toolName string) string {
 	home, _ := os.UserHomeDir()
-	return filepath.Join(home, ".openclaw", "skills", toolName, "SKILL.md")
+	// Vendor skills may use a different directory name than the tool name
+	dirName := toolName
+	if vendorName, ok := vendorSkillNames[toolName]; ok {
+		dirName = vendorName
+	}
+	return filepath.Join(home, ".openclaw", "skills", dirName, "SKILL.md")
 }
 
 const genericTemplate = `---
