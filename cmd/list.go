@@ -71,7 +71,7 @@ func listAvailable() error {
 
 	// Build sorted category list — known categories first in a logical order,
 	// then any new categories alphabetically
-	knownOrder := []string{"cloud", "deploy", "iac", "k8s", "payments", "ecommerce", "observability", "backend", "utility", "secrets", "social", "productivity", "email", "media", "finance", "news"}
+	knownOrder := []string{"cloud", "deploy", "iac", "k8s", "payments", "ecommerce", "observability", "analytics", "backend", "utility", "secrets", "social", "productivity", "email", "media", "finance", "news"}
 	seen := map[string]bool{}
 	var categoryOrder []string
 	for _, cat := range knownOrder {
@@ -119,6 +119,7 @@ func categoryLabel(cat string) string {
 		"secrets":       "Secrets Management",
 		"social":        "Social Media",
 		"productivity":  "Productivity",
+		"analytics":     "Analytics",
 		"email":         "Email",
 		"media":         "Media",
 		"finance":       "Finance",

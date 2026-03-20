@@ -17,6 +17,8 @@
     "jq",
     "kubectl",
     "linear",
+    "mj-discord",
+    "mj-ga4",
     "netlify",
     "ngrok",
     "notion",
