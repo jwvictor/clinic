@@ -23,14 +23,15 @@ type ToolDef struct {
 
 // InstallMethod defines one way to install a tool.
 type InstallMethod struct {
-	Type        string   `json:"type"`     // brew, npm, binary, apt, curl_script
+	Type        string   `json:"type"`     // brew, npm, curl_script, shell, go_install, cargo_install
 	Platforms   []string `json:"platforms"` // macos, linux
 	Formula     string   `json:"formula,omitempty"`
 	Package     string   `json:"package,omitempty"`
 	Global      bool     `json:"global,omitempty"`
 	URLTemplate string   `json:"url_template,omitempty"`
 	BinaryName  string   `json:"binary_name,omitempty"`
-	ScriptURL   string   `json:"script_url,omitempty"`
+	ScriptURL    string   `json:"script_url,omitempty"`
+	ShellCommand string   `json:"shell_command,omitempty"` // raw shell command to run (alternative to script_url)
 	Requires    string   `json:"requires,omitempty"`
 }
 

@@ -8,12 +8,12 @@
   "version_pattern": "(\\S+)",
   "install_methods": [
     {
-      "type": "brew",
+      "type": "go_install",
       "platforms": [
         "macos",
         "linux"
       ],
-      "formula": "discordo"
+      "package": "github.com/ayn2op/discordo@latest"
     }
   ],
   "auth": {

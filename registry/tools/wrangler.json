@@ -5,7 +5,7 @@
   "language": "node",
   "category": "deploy",
   "version_command": "wrangler --version",
-  "version_pattern": "wrangler (\\S+)",
+  "version_pattern": "(\\S+)",
   "install_methods": [
     {
       "type": "npm",

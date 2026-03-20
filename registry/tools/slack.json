@@ -5,7 +5,7 @@
   "language": "go",
   "category": "productivity",
   "version_command": "slack --version",
-  "version_pattern": "(\\S+)",
+  "version_pattern": "v(\\S+)",
   "install_methods": [
     {
       "type": "brew",
@@ -15,18 +15,18 @@
       "formula": "slack-cli"
     },
     {
-      "type": "curl_script",
+      "type": "shell",
       "platforms": [
         "macos",
         "linux"
       ],
-      "script_url": "https://downloads.slack-edge.com/slack-cli/install.sh"
+      "shell_command": "curl -fsSL https://downloads.slack-edge.com/slack-cli/install.sh | bash && sudo ln -sf $HOME/.slack/bin/slack /usr/local/bin/slack"
     }
   ],
   "auth": {
     "inject_type": "env",
     "env_var": "SLACK_TOKEN",
-    "auth_check": "slack auth info",
+    "auth_check": "slack auth list",
     "auth_command": "slack login"
   },
   "skill_template": ""

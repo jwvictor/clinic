@@ -5,7 +5,7 @@
   "language": "rust",
   "category": "social",
   "version_command": "x --version",
-  "version_pattern": "x-cli (\\S+)",
+  "version_pattern": "(\\S+)",
   "install_methods": [
     {
       "type": "brew",
@@ -14,13 +14,21 @@
         "linux"
       ],
       "formula": "x-cli"
+    },
+    {
+      "type": "cargo_install",
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "package": "https://github.com/sferik/x-cli.git"
     }
   ],
   "auth": {
     "inject_type": "env",
     "env_var": "X_API_KEY",
-    "auth_check": "x auth status",
-    "auth_command": "x auth login"
+    "auth_check": "x accounts",
+    "auth_command": "x accounts"
   },
   "skill_template": ""
 }

@@ -8,6 +8,7 @@ RUN apt-get update && apt-get install -y \
     unzip \
     ca-certificates \
     gnupg \
+    libx11-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Node.js 22 (for npm-based CLI tools)
@@ -21,6 +22,9 @@ RUN useradd -m -s /bin/bash tester \
 
 USER tester
 WORKDIR /home/tester
+
+# Install Rust/Cargo as tester user (for cargo_install method)
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 
 RUN /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" \
     && echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> ~/.bashrc
@@ -37,6 +41,10 @@ RUN go build -o /usr/local/bin/clinic . \
 # Switch to test user
 USER tester
 WORKDIR /home/tester
-ENV PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:${PATH}"
+ENV GOPATH="/home/tester/go"
+ENV GOTOOLCHAIN="auto"
+ENV PATH="/home/tester/go/bin:/home/tester/.cargo/bin:/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:${PATH}"
+# Force the embedded registry so tests use the compiled-in JSON, not the remote one
+ENV CLINIC_REGISTRY_URL="file:///dev/null"
 
 CMD ["/bin/bash"]

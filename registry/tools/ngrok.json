@@ -10,10 +10,17 @@
     {
       "type": "brew",
       "platforms": [
+        "macos"
+      ],
+      "formula": "ngrok/ngrok/ngrok"
+    },
+    {
+      "type": "curl_script",
+      "platforms": [
         "macos",
         "linux"
       ],
-      "formula": "ngrok/ngrok/ngrok"
+      "script_url": "https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz"
     }
   ],
   "auth": {

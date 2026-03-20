@@ -1,7 +1,7 @@
 {
   "name": "circumflex",
   "command": "clx",
-  "description": "Hacker News in the terminal — browse, read, comment",
+  "description": "Hacker News in the terminal — browse stories, read articles",
   "language": "go",
   "category": "news",
   "version_command": "clx --version",

@@ -13,7 +13,7 @@
         "macos",
         "linux"
       ],
-      "package": "zernio",
+      "package": "@getlatedev/cli",
       "global": true
     }
   ],

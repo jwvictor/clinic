@@ -16,8 +16,8 @@ import (
 )
 
 const (
-	// remoteBaseURL is the raw GitHub URL for the registry directory.
-	remoteBaseURL = "https://raw.githubusercontent.com/jwvictor/clinic/main/registry"
+	// defaultRemoteBaseURL is the raw GitHub URL for the registry directory.
+	defaultRemoteBaseURL = "https://raw.githubusercontent.com/jwvictor/clinic/main/registry"
 
 	// cacheTTL controls how often we check for remote updates.
 	cacheTTL = 24 * time.Hour
@@ -98,6 +98,14 @@ func (r *Registry) StackNames() []string {
 	return names
 }
 
+// remoteBaseURL returns the registry URL, checking CLINIC_REGISTRY_URL env var first.
+func remoteBaseURL() string {
+	if u := os.Getenv("CLINIC_REGISTRY_URL"); u != "" {
+		return u
+	}
+	return defaultRemoteBaseURL
+}
+
 // --- Cache ---
 
 func cacheDir() string {
@@ -129,7 +137,7 @@ func fetchAndCache() (*Registry, error) {
 	client := &http.Client{Timeout: fetchTimeout}
 
 	// Fetch and validate index
-	indexBytes, err := httpGet(client, remoteBaseURL+"/index.json")
+	indexBytes, err := httpGet(client, remoteBaseURL()+"/index.json")
 	if err != nil {
 		return nil, fmt.Errorf("fetch index: %w", err)
 	}
@@ -153,7 +161,7 @@ func fetchAndCache() (*Registry, error) {
 
 	// Fetch and cache all tools
 	for _, name := range idx.Tools {
-		data, err := httpGet(client, fmt.Sprintf("%s/tools/%s.json", remoteBaseURL, name))
+		data, err := httpGet(client, fmt.Sprintf("%s/tools/%s.json", remoteBaseURL(), name))
 		if err != nil {
 			return nil, fmt.Errorf("fetch tool %s: %w", name, err)
 		}
@@ -164,7 +172,7 @@ func fetchAndCache() (*Registry, error) {
 
 	// Fetch and cache all stacks
 	for _, name := range idx.Stacks {
-		data, err := httpGet(client, fmt.Sprintf("%s/stacks/%s.json", remoteBaseURL, name))
+		data, err := httpGet(client, fmt.Sprintf("%s/stacks/%s.json", remoteBaseURL(), name))
 		if err != nil {
 			return nil, fmt.Errorf("fetch stack %s: %w", name, err)
 		}

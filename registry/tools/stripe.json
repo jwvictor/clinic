@@ -16,12 +16,11 @@
       "formula": "stripe/stripe-cli/stripe"
     },
     {
-      "type": "binary",
+      "type": "shell",
       "platforms": [
-        "macos",
         "linux"
       ],
-      "url_template": "https://github.com/stripe/stripe-cli/releases/latest"
+      "shell_command": "set -e && VER=$(curl -sI https://github.com/stripe/stripe-cli/releases/latest | grep -i location | sed 's/.*tag\\/v//' | tr -d '\\r\\n') && curl -sSL https://github.com/stripe/stripe-cli/releases/download/v${VER}/stripe_${VER}_linux_x86_64.tar.gz -o /tmp/_stripe.tgz && cd /tmp && tar -xzf _stripe.tgz stripe && sudo mv stripe /usr/local/bin/ && rm -f _stripe.tgz"
     }
   ],
   "auth": {

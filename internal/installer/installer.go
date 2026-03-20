@@ -14,7 +14,7 @@ import (
 type Status struct {
 	Installed    bool
 	Version      string
-	InstalledVia string // brew, npm, binary, unknown
+	InstalledVia string // brew, npm, binary, curl_script, go_install, cargo_install, unknown
 }
 
 // Detect checks if a tool is already installed and returns its status.
@@ -113,9 +113,45 @@ func Install(tool registry.ToolDef) (string, error) {
 			}
 		case "curl_script":
 			if method.ScriptURL != "" {
-				err := runShell(fmt.Sprintf("curl -sSL %s | sh", method.ScriptURL))
+				var err error
+				if strings.HasSuffix(method.ScriptURL, ".tgz") || strings.HasSuffix(method.ScriptURL, ".tar.gz") {
+					// Binary tarball — download, extract, move to /usr/local/bin
+					binaryName := tool.Command
+					if method.BinaryName != "" {
+						binaryName = method.BinaryName
+					}
+					script := fmt.Sprintf(
+						"cd /tmp && curl -sSL %s -o _clinic_dl.tgz && tar -xzf _clinic_dl.tgz %s && sudo mv %s /usr/local/bin/ && rm -f _clinic_dl.tgz",
+						method.ScriptURL, binaryName, binaryName,
+					)
+					err = runShell(script)
+				} else {
+					err = runShell(fmt.Sprintf("curl -sSL %s | bash", method.ScriptURL))
+				}
 				if err == nil {
 					return "curl_script", nil
+				}
+			}
+		case "shell":
+			if method.ShellCommand != "" {
+				err := runShell(method.ShellCommand)
+				if err == nil {
+					return "shell", nil
+				}
+			}
+		case "go_install":
+			if hasGo() && method.Package != "" {
+				err := runInstall("go", "install", method.Package)
+				if err == nil {
+					return "go_install", nil
+				}
+			}
+		case "cargo_install":
+			if hasCargo() && method.Package != "" {
+				args := []string{"install", "--git", method.Package}
+				err := runInstall("cargo", args...)
+				if err == nil {
+					return "cargo_install", nil
 				}
 			}
 		}
@@ -140,6 +176,16 @@ func hasBrew() bool {
 
 func hasNpm() bool {
 	_, err := exec.LookPath("npm")
+	return err == nil
+}
+
+func hasGo() bool {
+	_, err := exec.LookPath("go")
+	return err == nil
+}
+
+func hasCargo() bool {
+	_, err := exec.LookPath("cargo")
 	return err == nil
 }
 
