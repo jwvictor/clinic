@@ -27,7 +27,10 @@
   "auth": {
     "inject_type": "env",
     "env_var": "X_API_KEY",
-    "auth_hint": "Set X_API_KEY with your API key from https://developer.x.com/portal"
+    "auth_check": "x accounts",
+    "auth_check_pattern": "\\S",
+    "auth_command": "x authorize",
+    "auth_hint": "Create an app at https://developer.x.com/portal, add your consumer key/secret to a profile, then run: x authorize"
   },
   "skill_template": ""
 }
