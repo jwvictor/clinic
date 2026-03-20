@@ -67,7 +67,12 @@ func detectMethod(tool registry.ToolDef) string {
 			if name == "" {
 				name = tool.Command
 			}
+			// Check both formula and cask
 			out, err := exec.Command("brew", "list", "--formula", name).CombinedOutput()
+			if err == nil && len(out) > 0 {
+				return "brew"
+			}
+			out, err = exec.Command("brew", "list", "--cask", name).CombinedOutput()
 			if err == nil && len(out) > 0 {
 				return "brew"
 			}
@@ -82,8 +87,12 @@ func detectMethod(tool registry.ToolDef) string {
 			}
 		}
 	}
-	// Fallback: check by command name
+	// Fallback: check by command name (formula and cask)
 	out, err := exec.Command("brew", "list", "--formula", tool.Command).CombinedOutput()
+	if err == nil && len(out) > 0 {
+		return "brew"
+	}
+	out, err = exec.Command("brew", "list", "--cask", tool.Command).CombinedOutput()
 	if err == nil && len(out) > 0 {
 		return "brew"
 	}
