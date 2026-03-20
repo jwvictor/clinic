@@ -43,8 +43,8 @@ print(' '.join(sorted(idx['tools'])))
 fi
 
 echo ""
-printf "${BOLD}%-15s %-12s %-12s %-12s${RESET}\n" "TOOL" "INSTALL" "VERSION" "AUTH-CMD"
-printf "%-15s %-12s %-12s %-12s\n" "────" "───────" "───────" "────────"
+printf "${BOLD}%-15s %-12s %-12s %-12s %-12s${RESET}\n" "TOOL" "INSTALL" "VERSION" "AUTH-CMD" "SKILLS-SRC"
+printf "%-15s %-12s %-12s %-12s %-12s\n" "────" "───────" "───────" "────────" "──────────"
 
 for tool_name in "${TOOLS[@]}"; do
     tool_file="$REGISTRY_DIR/tools/${tool_name}.json"
@@ -149,6 +149,26 @@ print(m.group(1) if m else '')
         else
             printf "$(ok) %-10s" "ok"
             PASS=$((PASS + 1))
+        fi
+    fi
+
+    # --- 4. Vendor skills source ---
+    skills_source=$(python3 -c "import json; t=json.load(open('$tool_file')); print(t.get('skills_source',''))")
+    if [ -z "$skills_source" ]; then
+        printf "$(skip) %-10s" "none"
+        SKIP=$((SKIP + 1))
+    else
+        # Check if the GitHub repo exists and has skill files
+        skills_subdir=$(python3 -c "import json; t=json.load(open('$tool_file')); print(t.get('skills_subdir','skills'))")
+        repo_url="https://api.github.com/repos/${skills_source}/contents/${skills_subdir}"
+        http_code=$(curl -s -o /dev/null -w "%{http_code}" "$repo_url" 2>/dev/null || echo "000")
+        if [ "$http_code" = "200" ]; then
+            printf "$(ok) %-10s" "ok"
+            PASS=$((PASS + 1))
+        else
+            printf "$(fail) %-10s" "http $http_code"
+            FAIL=$((FAIL + 1))
+            FAILURES+=("$tool_name: skills_source $skills_source/$skills_subdir returned HTTP $http_code")
         fi
     fi
 

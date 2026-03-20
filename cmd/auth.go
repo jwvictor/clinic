@@ -139,7 +139,6 @@ func runAuth(toolName string) error {
 
 	fmt.Printf("\n✓ %s authenticated\n", toolName)
 	generateSkillsAfterAuth(tool)
-	checkShellenvSetup()
 	return nil
 }
 
@@ -211,12 +210,15 @@ func generateSkillsAfterAuth(tool registry.ToolDef) {
 	}
 }
 
+var shellenvHintShown bool
+
 // checkShellenvSetup checks if eval "$(clinic shellenv)" is in the user's
-// shell RC file, and suggests adding it if not.
+// shell RC file, and suggests adding it if not. Only prints once per session.
 func checkShellenvSetup() {
-	if config.HasShellenvInRC() {
+	if shellenvHintShown || config.HasShellenvInRC() {
 		return
 	}
+	shellenvHintShown = true
 	rcFile := config.ShellRCFile()
 	fmt.Printf("\n  To load credentials in new shells, add this to %s:\n", rcFile)
 	fmt.Printf("    eval \"$(clinic shellenv)\"\n")

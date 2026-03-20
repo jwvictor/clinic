@@ -80,6 +80,11 @@ func FetchVendorSkills(tool registry.ToolDef) (int, error) {
 	var installedNames []string
 	for _, skillSrcDir := range skillDirsToCopy {
 		skillName := filepath.Base(skillSrcDir)
+		// If the SKILL.md is directly in the skills/ dir (not a subdirectory),
+		// filepath.Base returns "skills" which is wrong — use the tool name instead
+		if skillName == "skills" || skillName == skillsSubdir || skillSrcDir == srcDir {
+			skillName = tool.Name
+		}
 
 		for _, targetRoot := range targets {
 			targetDir := filepath.Join(targetRoot, skillName)
