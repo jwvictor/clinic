@@ -1,7 +1,7 @@
 {
   "name": "late",
   "command": "late",
-  "description": "Late (Zernio) — post to 13+ social platforms from one CLI",
+  "description": "Zernio (formerly Late) — post to 13+ social platforms from one CLI",
   "language": "node",
   "category": "social",
   "version_command": "late --version",
@@ -23,7 +23,7 @@
     "auth_check": "late auth:check",
     "auth_check_pattern": "valid|authenticated|ok",
     "auth_command": "late auth:set",
-    "auth_hint": "Get your API key from your Late/Zernio dashboard at https://app.getlate.dev/settings/api"
+    "auth_hint": "Get your API key from your Zernio dashboard at https://zernio.com/dashboard/api"
   },
   "skill_template": "",
   "skills_source": "zernio-dev/zernio-cli",
