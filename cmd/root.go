@@ -32,6 +32,7 @@ func init() {
 	rootCmd.AddCommand(stacksCmd)
 	rootCmd.AddCommand(shellenvCmd)
 	rootCmd.AddCommand(versionCmd)
+	rootCmd.AddCommand(nukeCmd)
 }
 
 var versionCmd = &cobra.Command{

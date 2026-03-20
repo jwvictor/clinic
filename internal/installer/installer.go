@@ -25,7 +25,7 @@ func Detect(tool registry.ToolDef) Status {
 	}
 
 	version := detectVersion(tool)
-	method := detectMethod(tool.Command)
+	method := detectMethod(tool)
 
 	return Status{
 		Installed:    true,
@@ -57,16 +57,35 @@ func detectVersion(tool registry.ToolDef) string {
 	return strings.TrimSpace(string(out))
 }
 
-func detectMethod(command string) string {
-	// Check if it's a brew-managed binary
-	out, err := exec.Command("brew", "list", "--formula", command).CombinedOutput()
+func detectMethod(tool registry.ToolDef) string {
+	// Try each install method's actual formula/package name — the command name
+	// often differs (e.g., command "clx" is brew formula "circumflex").
+	for _, m := range tool.InstallMethods {
+		switch m.Type {
+		case "brew":
+			name := m.Formula
+			if name == "" {
+				name = tool.Command
+			}
+			out, err := exec.Command("brew", "list", "--formula", name).CombinedOutput()
+			if err == nil && len(out) > 0 {
+				return "brew"
+			}
+		case "npm":
+			name := m.Package
+			if name == "" {
+				name = tool.Command
+			}
+			out, err := exec.Command("npm", "list", "-g", "--depth=0", name).CombinedOutput()
+			if err == nil && strings.Contains(string(out), name) {
+				return "npm"
+			}
+		}
+	}
+	// Fallback: check by command name
+	out, err := exec.Command("brew", "list", "--formula", tool.Command).CombinedOutput()
 	if err == nil && len(out) > 0 {
 		return "brew"
-	}
-	// Check if it's an npm global
-	out, err = exec.Command("npm", "list", "-g", "--depth=0", command).CombinedOutput()
-	if err == nil && strings.Contains(string(out), command) {
-		return "npm"
 	}
 	return "unknown"
 }

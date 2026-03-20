@@ -1,8 +1,11 @@
 package cmd
 
 import (
+	"bufio"
 	"fmt"
 	"os"
+	"os/exec"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/togglemedia/clinic/internal/config"
@@ -50,6 +53,13 @@ var initCmd = &cobra.Command{
 		}
 		lf.Project.Stack = stack.Name
 
+		// Track tools that need auth
+		type unauthTool struct {
+			name    string
+			authCmd string
+		}
+		var needsAuth []unauthTool
+
 		for i, toolName := range stack.Tools {
 			tool, ok := reg.GetTool(toolName)
 			if !ok {
@@ -83,7 +93,11 @@ var initCmd = &cobra.Command{
 			} else if health.AuthOK {
 				fmt.Printf("  ✓ Authenticated (%s)\n", health.AuthUser)
 			} else {
-				fmt.Printf("  ⚠ Not authenticated — run: %s\n", tool.Auth.AuthCmd)
+				fmt.Printf("  ⚠ Not authenticated\n")
+				needsAuth = append(needsAuth, unauthTool{
+					name:    tool.Name,
+					authCmd: tool.Auth.AuthCmd,
+				})
 			}
 
 			// Generate skill
@@ -107,6 +121,38 @@ var initCmd = &cobra.Command{
 		}
 
 		fmt.Printf("Wrote %s\n\n", config.LockfilePath())
+
+		// Offer to authenticate tools that need it
+		if len(needsAuth) > 0 {
+			fmt.Printf("The following tools need authentication:\n\n")
+			for i, t := range needsAuth {
+				fmt.Printf("  %d. %s\n", i+1, t.name)
+			}
+			fmt.Println()
+			fmt.Printf("Authenticate now? [Y/n] ")
+
+			reader := bufio.NewReader(os.Stdin)
+			answer, _ := reader.ReadString('\n')
+			answer = strings.TrimSpace(strings.ToLower(answer))
+
+			if answer == "" || answer == "y" || answer == "yes" {
+				fmt.Println()
+				for _, t := range needsAuth {
+					fmt.Printf("─── Authenticating %s ───\n\n", t.name)
+					parts := strings.Fields(t.authCmd)
+					c := exec.Command(parts[0], parts[1:]...)
+					c.Stdin = os.Stdin
+					c.Stdout = os.Stdout
+					c.Stderr = os.Stderr
+					if err := c.Run(); err != nil {
+						fmt.Printf("\n⚠ %s auth failed: %s\n\n", t.name, err)
+					} else {
+						fmt.Printf("\n✓ %s authenticated\n\n", t.name)
+					}
+				}
+			}
+		}
+
 		fmt.Println("Your workspace is agent-ready. 🤝")
 		return nil
 	},
