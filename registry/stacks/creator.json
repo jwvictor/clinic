@@ -4,6 +4,7 @@
   "tools": [
     "x-cli",
     "postiz",
+    "typefully",
     "yt-dlp",
     "circumflex",
     "notion",

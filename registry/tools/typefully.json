@@ -1,0 +1,23 @@
+{
+  "name": "typefully",
+  "command": "typefully",
+  "description": "Typefully — draft, schedule, and publish to X, LinkedIn, Threads, Bluesky, Mastodon",
+  "language": "node",
+  "category": "social",
+  "version_command": "typefully --version",
+  "version_pattern": "(\\S+)",
+  "install_methods": [
+    {
+      "type": "npm",
+      "platforms": ["macos", "linux"],
+      "package": "typefully",
+      "global": true
+    }
+  ],
+  "auth": {
+    "inject_type": "env",
+    "env_var": "TYPEFULLY_API_KEY",
+    "auth_hint": "Get your API key from https://typefully.com/?settings=api"
+  },
+  "skills_source": "ahmadawais/typefully-cli"
+}
