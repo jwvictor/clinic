@@ -28,7 +28,8 @@
     "inject_type": "env",
     "env_var": "X_API_KEY",
     "auth_check": "x accounts",
-    "auth_command": "x accounts"
+    "auth_check_pattern": "\\S",
+    "auth_command": "x authorize"
   },
   "skill_template": ""
 }

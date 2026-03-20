@@ -1,7 +1,9 @@
 package doctor
 
 import (
+	"os"
 	"os/exec"
+	"regexp"
 	"strings"
 
 	"github.com/togglemedia/clinic/internal/installer"
@@ -36,10 +38,16 @@ func Check(tool registry.ToolDef) ToolHealth {
 
 	// Check auth
 	if tool.Auth.AuthCheck != "" {
-		health.AuthOK, health.AuthUser = checkAuth(tool.Auth.AuthCheck)
+		health.AuthOK, health.AuthUser = checkAuth(tool.Auth)
 	} else if tool.Auth.InjectType == "none" {
 		health.AuthOK = true
 		health.AuthUser = "n/a"
+	} else if tool.Auth.EnvVar != "" {
+		// No auth_check command, but there's an env var — check if it's set
+		if os.Getenv(tool.Auth.EnvVar) != "" {
+			health.AuthOK = true
+			health.AuthUser = "via " + tool.Auth.EnvVar
+		}
 	}
 
 	// Check skill file existence
@@ -48,17 +56,35 @@ func Check(tool registry.ToolDef) ToolHealth {
 	return health
 }
 
-func checkAuth(command string) (bool, string) {
-	parts := strings.Fields(command)
+func checkAuth(auth registry.AuthDef) (bool, string) {
+	parts := strings.Fields(auth.AuthCheck)
 	out, err := exec.Command(parts[0], parts[1:]...).CombinedOutput()
 	if err != nil {
 		return false, ""
 	}
 	output := strings.TrimSpace(string(out))
-	lower := strings.ToLower(output)
 
-	// Many CLIs exit 0 even when not authenticated — check the output for
-	// common failure phrases.
+	// If the tool defines an explicit success pattern, use it.
+	// Output must match for auth to be considered OK.
+	if auth.AuthCheckPattern != "" {
+		re, err := regexp.Compile(auth.AuthCheckPattern)
+		if err != nil {
+			return false, ""
+		}
+		matches := re.FindStringSubmatch(output)
+		if matches == nil {
+			return false, ""
+		}
+		// If the pattern has a capture group, use it as the user identifier
+		user := ""
+		if len(matches) > 1 {
+			user = truncate(matches[1], 50)
+		}
+		return true, user
+	}
+
+	// Fallback heuristic: exit code 0 + no obvious failure phrases = authenticated
+	lower := strings.ToLower(output)
 	failPhrases := []string{
 		"not logged in",
 		"not authenticated",
@@ -71,7 +97,6 @@ func checkAuth(command string) (bool, string) {
 		"please login",
 		"to log in",
 		"to login",
-		"run `slack login`",
 	}
 	for _, phrase := range failPhrases {
 		if strings.Contains(lower, phrase) {
@@ -81,14 +106,13 @@ func checkAuth(command string) (bool, string) {
 
 	// Extract first line as a rough "user" indicator
 	lines := strings.Split(output, "\n")
-	if len(lines) > 0 {
+	if len(lines) > 0 && lines[0] != "" {
 		return true, truncate(lines[0], 50)
 	}
 	return true, ""
 }
 
 func checkSkillExists(toolName string) bool {
-	// Check common skill locations
 	paths := skillPaths(toolName)
 	for _, p := range paths {
 		if fileExists(p) {

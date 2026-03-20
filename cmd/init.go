@@ -55,8 +55,9 @@ var initCmd = &cobra.Command{
 
 		// Track tools that need auth
 		type unauthTool struct {
-			name    string
-			authCmd string
+			name     string
+			authCmd  string
+			authHint string
 		}
 		var needsAuth []unauthTool
 
@@ -95,8 +96,9 @@ var initCmd = &cobra.Command{
 			} else {
 				fmt.Printf("  ⚠ Not authenticated\n")
 				needsAuth = append(needsAuth, unauthTool{
-					name:    tool.Name,
-					authCmd: tool.Auth.AuthCmd,
+					name:     tool.Name,
+					authCmd:  tool.Auth.AuthCmd,
+					authHint: tool.Auth.AuthHint,
 				})
 			}
 
@@ -129,16 +131,24 @@ var initCmd = &cobra.Command{
 				fmt.Printf("  %d. %s\n", i+1, t.name)
 			}
 			fmt.Println()
-			fmt.Printf("Authenticate now? [Y/n] ")
+			fmt.Printf("Which tools to authenticate? (e.g. 1,3 / all / none): ")
 
 			reader := bufio.NewReader(os.Stdin)
 			answer, _ := reader.ReadString('\n')
 			answer = strings.TrimSpace(strings.ToLower(answer))
 
-			if answer == "" || answer == "y" || answer == "yes" {
+			// Parse selection
+			selected := parseSelection(answer, len(needsAuth))
+
+			if len(selected) > 0 {
 				fmt.Println()
-				for _, t := range needsAuth {
-					fmt.Printf("─── Authenticating %s ───\n\n", t.name)
+				for _, idx := range selected {
+					t := needsAuth[idx]
+					fmt.Printf("─── Authenticating %s ───\n", t.name)
+					if t.authHint != "" {
+						fmt.Printf("  ℹ %s\n", t.authHint)
+					}
+					fmt.Println()
 					parts := strings.Fields(t.authCmd)
 					c := exec.Command(parts[0], parts[1:]...)
 					c.Stdin = os.Stdin
@@ -156,6 +166,35 @@ var initCmd = &cobra.Command{
 		fmt.Println("Your workspace is agent-ready. 🤝")
 		return nil
 	},
+}
+
+// parseSelection parses user input like "1,3,5", "all", or "none" into
+// a slice of 0-based indices.
+func parseSelection(input string, total int) []int {
+	if input == "none" || input == "n" || input == "" {
+		return nil
+	}
+	if input == "all" || input == "a" {
+		indices := make([]int, total)
+		for i := range indices {
+			indices[i] = i
+		}
+		return indices
+	}
+	var indices []int
+	for _, part := range strings.Split(input, ",") {
+		part = strings.TrimSpace(part)
+		n := 0
+		for _, c := range part {
+			if c >= '0' && c <= '9' {
+				n = n*10 + int(c-'0')
+			}
+		}
+		if n >= 1 && n <= total {
+			indices = append(indices, n-1)
+		}
+	}
+	return indices
 }
 
 func init() {

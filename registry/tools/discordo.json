@@ -19,8 +19,8 @@
   "auth": {
     "inject_type": "env",
     "env_var": "DISCORD_TOKEN",
-    "auth_check": "discordo --help",
-    "auth_command": "discordo"
+    "auth_command": "discordo",
+    "auth_hint": "Discordo will prompt for your Discord token on first launch. Get it from Discord DevTools (Ctrl+Shift+I → Network → filter for /api → copy Authorization header)"
   },
   "skill_template": ""
 }

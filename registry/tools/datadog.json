@@ -17,6 +17,6 @@
   "auth": {
     "inject_type": "env",
     "env_var": "DD_API_KEY",
-    "auth_check": "datadog-ci version"
+    "auth_hint": "Set DD_API_KEY (and optionally DD_APP_KEY) from Datadog → Organization Settings → API Keys"
   }
 }

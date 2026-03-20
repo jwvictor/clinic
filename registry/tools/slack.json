@@ -27,6 +27,7 @@
     "inject_type": "env",
     "env_var": "SLACK_TOKEN",
     "auth_check": "slack auth list",
+    "auth_check_pattern": "team_id|workspace",
     "auth_command": "slack login"
   },
   "skill_template": ""

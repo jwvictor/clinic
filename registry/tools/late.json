@@ -20,8 +20,10 @@
   "auth": {
     "inject_type": "env",
     "env_var": "LATE_API_KEY",
-    "auth_check": "late auth status",
-    "auth_command": "late auth login"
+    "auth_check": "late auth:check",
+    "auth_check_pattern": "valid|authenticated|ok",
+    "auth_command": "late auth:set",
+    "auth_hint": "Get your API key from your Late/Zernio dashboard at https://app.getlate.dev/settings/api"
   },
   "skill_template": "",
   "skills_source": "zernio-dev/zernio-cli",

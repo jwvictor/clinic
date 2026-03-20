@@ -69,13 +69,29 @@ func listAvailable() error {
 		categories[t.Category] = append(categories[t.Category], t)
 	}
 
-	categoryOrder := []string{"cloud", "deploy", "iac", "k8s", "payments", "observability", "backend", "utility", "secrets"}
+	// Build sorted category list — known categories first in a logical order,
+	// then any new categories alphabetically
+	knownOrder := []string{"cloud", "deploy", "iac", "k8s", "payments", "ecommerce", "observability", "backend", "utility", "secrets", "social", "productivity", "media", "finance", "news"}
+	seen := map[string]bool{}
+	var categoryOrder []string
+	for _, cat := range knownOrder {
+		if _, ok := categories[cat]; ok {
+			categoryOrder = append(categoryOrder, cat)
+			seen[cat] = true
+		}
+	}
+	// Append any categories not in the known list
+	var extra []string
+	for cat := range categories {
+		if !seen[cat] {
+			extra = append(extra, cat)
+		}
+	}
+	sort.Strings(extra)
+	categoryOrder = append(categoryOrder, extra...)
 
 	for _, cat := range categoryOrder {
-		tools, ok := categories[cat]
-		if !ok {
-			continue
-		}
+		tools := categories[cat]
 		sort.Slice(tools, func(i, j int) bool { return tools[i].Name < tools[j].Name })
 
 		fmt.Printf("%s\n", categoryLabel(cat))
@@ -96,10 +112,16 @@ func categoryLabel(cat string) string {
 		"iac":           "Infrastructure as Code",
 		"k8s":           "Kubernetes",
 		"payments":      "Payments & Commerce",
+		"ecommerce":     "E-Commerce",
 		"observability": "Observability",
 		"backend":       "Backend & Databases",
-		"utility":       "Developer Utilities",
+		"utility":       "Utilities",
 		"secrets":       "Secrets Management",
+		"social":        "Social Media",
+		"productivity":  "Productivity",
+		"media":         "Media",
+		"finance":       "Finance",
+		"news":          "News",
 	}
 	if l, ok := labels[cat]; ok {
 		return l

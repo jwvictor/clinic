@@ -28,7 +28,7 @@
   "auth": {
     "inject_type": "file",
     "env_var": "GOOGLE_APPLICATION_CREDENTIALS",
-    "auth_check": "firebase login --list",
+    "auth_check": "firebase login:list",
     "auth_command": "firebase login",
     "auth_command_headless": "firebase login --no-localhost"
   },
