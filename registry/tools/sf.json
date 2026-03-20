@@ -1,0 +1,35 @@
+{
+  "name": "sf",
+  "command": "sf",
+  "description": "Salesforce CLI — orgs, data queries, deployments, metadata",
+  "language": "node",
+  "category": "cloud",
+  "version_command": "sf --version",
+  "version_pattern": "@salesforce/cli/(\\S+)",
+  "install_methods": [
+    {
+      "type": "npm",
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "package": "@salesforce/cli"
+    },
+    {
+      "type": "brew",
+      "platforms": [
+        "macos"
+      ],
+      "formula": "sf"
+    }
+  ],
+  "auth": {
+    "inject_type": "file",
+    "auth_check": "sf org list",
+    "auth_check_pattern": "Username|Active",
+    "auth_command": "sf org login web",
+    "auth_command_headless": "sf org login device",
+    "auth_hint": "Log in to your Salesforce org via browser. For sandboxes, use: sf org login web --instance-url https://test.salesforce.com"
+  },
+  "skill_template": ""
+}

@@ -1,0 +1,28 @@
+{
+  "name": "resend",
+  "command": "resend",
+  "description": "Resend CLI — transactional email, domains, API keys, audiences",
+  "language": "node",
+  "category": "email",
+  "version_command": "resend --version",
+  "version_pattern": "(\\S+)",
+  "install_methods": [
+    {
+      "type": "npm",
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "package": "resend-cli"
+    }
+  ],
+  "auth": {
+    "inject_type": "env",
+    "env_var": "RESEND_API_KEY",
+    "auth_check": "resend domains list",
+    "auth_check_pattern": "id|name|status",
+    "auth_command": "resend login",
+    "auth_hint": "Log in via browser or set RESEND_API_KEY from https://resend.com/api-keys"
+  },
+  "skill_template": ""
+}

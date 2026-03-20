@@ -1,0 +1,35 @@
+{
+  "name": "spotify-player",
+  "command": "spotify_player",
+  "description": "Spotify player — playback control, search, playlists, Spotify Connect",
+  "language": "rust",
+  "category": "media",
+  "version_command": "spotify_player --version",
+  "version_pattern": "spotify_player (\\S+)",
+  "install_methods": [
+    {
+      "type": "brew",
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "formula": "spotify_player"
+    },
+    {
+      "type": "cargo_install",
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "package": "spotify_player"
+    }
+  ],
+  "auth": {
+    "inject_type": "file",
+    "auth_check": "spotify_player get key playback",
+    "auth_check_pattern": "device|name|volume|is_playing",
+    "auth_command": "spotify_player authenticate",
+    "auth_hint": "Authenticate via browser OAuth. Requires a Spotify Premium account."
+  },
+  "skill_template": ""
+}

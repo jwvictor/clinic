@@ -1,0 +1,34 @@
+{
+  "name": "op",
+  "command": "op",
+  "description": "1Password CLI — secrets, credentials, vaults, secure references",
+  "language": "go",
+  "category": "secrets",
+  "version_command": "op --version",
+  "version_pattern": "(\\S+)",
+  "install_methods": [
+    {
+      "type": "shell",
+      "platforms": [
+        "macos"
+      ],
+      "shell_command": "brew install --cask 1password-cli"
+    },
+    {
+      "type": "shell",
+      "platforms": [
+        "linux"
+      ],
+      "shell_command": "set -e && curl -sS https://downloads.1password.com/linux/keys/1password.asc | sudo gpg --dearmor --output /usr/share/keyrings/1password-archive-keyring.gpg && echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/1password-archive-keyring.gpg] https://downloads.1password.com/linux/debian/amd64 stable main' | sudo tee /etc/apt/sources.list.d/1password.list && sudo apt update && sudo apt install -y 1password-cli"
+    }
+  ],
+  "auth": {
+    "inject_type": "env",
+    "env_var": "OP_SERVICE_ACCOUNT_TOKEN",
+    "auth_check": "op account list",
+    "auth_check_pattern": "url|1password\\.com|my\\.1password",
+    "auth_command": "op signin",
+    "auth_hint": "Sign in with your 1Password account. For headless/automation use, create a service account at https://my.1password.com/developer-tools/infrastructure-secrets/serviceaccount"
+  },
+  "skill_template": ""
+}

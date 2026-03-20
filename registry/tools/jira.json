@@ -1,0 +1,35 @@
+{
+  "name": "jira",
+  "command": "jira",
+  "description": "Jira CLI — issues, sprints, boards, epics, project management",
+  "language": "go",
+  "category": "productivity",
+  "version_command": "jira version",
+  "version_pattern": "(\\S+)",
+  "install_methods": [
+    {
+      "type": "brew",
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "formula": "jira-cli"
+    },
+    {
+      "type": "go_install",
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "package": "github.com/ankitpokhrel/jira-cli/cmd/jira@latest"
+    }
+  ],
+  "auth": {
+    "inject_type": "file",
+    "auth_check": "jira me",
+    "auth_check_pattern": "Name|Email|email",
+    "auth_command": "jira init",
+    "auth_hint": "You'll need your Jira instance URL, email, and an API token from https://id.atlassian.com/manage-profile/security/api-tokens"
+  },
+  "skill_template": ""
+}
