@@ -50,7 +50,6 @@ var initCmd = &cobra.Command{
 
 		// Multi-select which tools to install (all pre-selected)
 		options := make([]huh.Option[string], 0, len(stack.Tools))
-		var defaultSelected []string
 		for _, toolName := range stack.Tools {
 			tool, ok := reg.GetTool(toolName)
 			if !ok {
@@ -59,8 +58,7 @@ var initCmd = &cobra.Command{
 			options = append(options, huh.NewOption(
 				fmt.Sprintf("%s — %s", tool.Name, tool.Description),
 				tool.Name,
-			))
-			defaultSelected = append(defaultSelected, tool.Name)
+			).Selected(true))
 		}
 
 		var selectedTools []string
@@ -73,7 +71,6 @@ var initCmd = &cobra.Command{
 					Value(&selectedTools),
 			),
 		)
-		selectedTools = defaultSelected // pre-select all
 		if err := form.Run(); err != nil {
 			return nil // user cancelled
 		}
