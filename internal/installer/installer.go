@@ -87,6 +87,16 @@ func detectMethod(tool registry.ToolDef) string {
 			if err == nil && strings.Contains(string(out), name) {
 				return "npm"
 			}
+		case "go_install":
+			binPath := filepath.Join(gobin(), tool.Command)
+			if _, err := os.Stat(binPath); err == nil {
+				return "go_install"
+			}
+		case "cargo_install":
+			binPath := filepath.Join(cargobin(), tool.Command)
+			if _, err := os.Stat(binPath); err == nil {
+				return "cargo_install"
+			}
 		}
 	}
 	// Fallback: check by command name (formula and cask)
@@ -109,6 +119,8 @@ func Install(tool registry.ToolDef) (string, error) {
 		platform = "macos"
 	}
 
+	var lastErr error
+
 	for _, method := range tool.InstallMethods {
 		if !supportsplatform(method, platform) {
 			continue
@@ -120,6 +132,7 @@ func Install(tool registry.ToolDef) (string, error) {
 				if err == nil {
 					return "brew", nil
 				}
+				lastErr = fmt.Errorf("brew install %s: %w", method.Formula, err)
 			}
 		case "npm":
 			if hasNpm() {
@@ -140,6 +153,7 @@ func Install(tool registry.ToolDef) (string, error) {
 				if err == nil {
 					return "npm", nil
 				}
+				lastErr = fmt.Errorf("npm install %s: %w", method.Package, err)
 			}
 		case "curl_script":
 			if method.ScriptURL != "" {
@@ -161,6 +175,7 @@ func Install(tool registry.ToolDef) (string, error) {
 				if err == nil {
 					return "curl_script", nil
 				}
+				lastErr = fmt.Errorf("curl_script for %s: %w", tool.Name, err)
 			}
 		case "shell":
 			if method.ShellCommand != "" {
@@ -168,6 +183,7 @@ func Install(tool registry.ToolDef) (string, error) {
 				if err == nil {
 					return "shell", nil
 				}
+				lastErr = fmt.Errorf("shell install %s: %w", tool.Name, err)
 			}
 		case "go_install":
 			if hasGo() && method.Package != "" {
@@ -178,6 +194,7 @@ func Install(tool registry.ToolDef) (string, error) {
 					symlinkToPath(tool.Command, gobin())
 					return "go_install", nil
 				}
+				lastErr = fmt.Errorf("go install %s: %w", method.Package, err)
 			}
 		case "cargo_install":
 			if hasCargo() && method.Package != "" {
@@ -188,10 +205,14 @@ func Install(tool registry.ToolDef) (string, error) {
 					symlinkToPath(tool.Command, cargobin())
 					return "cargo_install", nil
 				}
+				lastErr = fmt.Errorf("cargo install %s: %w", method.Package, err)
 			}
 		}
 	}
 
+	if lastErr != nil {
+		return "", lastErr
+	}
 	return "", fmt.Errorf("no available install method for %s on %s", tool.Name, platform)
 }
 
