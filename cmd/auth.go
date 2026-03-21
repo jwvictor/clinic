@@ -234,8 +234,8 @@ func runGwsAuth(tool registry.ToolDef) error {
 	}
 	fmt.Println(step(stepLabel) + "  Google Account Authorization")
 	fmt.Println()
-	fmt.Println("  Your browser will open to authorize access to Google")
-	fmt.Println("  Workspace services.")
+	fmt.Println("  Next, gws will confirm your scopes and give you a link")
+	fmt.Println("  to authorize access to your Google account.")
 	fmt.Println()
 
 	boxContent := warn("Check ALL the permission boxes!") + "\n\n" +
@@ -249,8 +249,8 @@ func runGwsAuth(tool registry.ToolDef) error {
 
 	var proceed bool
 	huh.NewConfirm().
-		Title("Open browser to log in?").
-		Affirmative("Open browser").
+		Title("Ready to continue?").
+		Affirmative("Continue").
 		Negative("Cancel").
 		Value(&proceed).
 		Run()
