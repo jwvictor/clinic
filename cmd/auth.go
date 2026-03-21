@@ -90,6 +90,11 @@ func runAuth(toolName string) error {
 		return nil
 	}
 
+	// Special guided flows for tools that need multi-step setup
+	if toolName == "gws" {
+		return runGwsAuth(tool)
+	}
+
 	// If the tool has env prompts (no interactive auth command), use our own flow
 	if len(tool.Auth.AuthEnvPrompts) > 0 {
 		return runEnvAuth(toolName, tool)
@@ -139,6 +144,92 @@ func runAuth(toolName string) error {
 
 	fmt.Printf("\n✓ %s authenticated\n", toolName)
 	generateSkillsAfterAuth(tool)
+	return nil
+}
+
+// runGwsAuth handles the multi-step Google Workspace CLI auth flow.
+// gws requires: (1) OAuth client setup via gws auth setup, then
+// (2) a scoped login via gws auth login -s. The setup step opens a TUI
+// wizard; the login step opens a browser where the user MUST check the
+// scope checkboxes (unverified apps show them unchecked by default).
+func runGwsAuth(tool registry.ToolDef) error {
+	reader := bufio.NewReader(os.Stdin)
+
+	// Step 1: Check if already set up
+	fmt.Println("─── Google Workspace CLI Authentication ───")
+	fmt.Println()
+	fmt.Println("This is a two-step process:")
+	fmt.Println("  1. Set up a GCP OAuth client (one-time setup)")
+	fmt.Println("  2. Log in with your Google account")
+	fmt.Println()
+
+	// Check if client_secret.json already exists
+	home, _ := os.UserHomeDir()
+	clientSecretPath := home + "/.config/gws/client_secret.json"
+	if _, err := os.Stat(clientSecretPath); err == nil {
+		fmt.Println("✓ OAuth client already configured (found client_secret.json)")
+		fmt.Println()
+	} else {
+		fmt.Println("Step 1: OAuth Client Setup")
+		fmt.Println()
+		fmt.Println("This will walk you through creating a GCP OAuth client.")
+		fmt.Println("You'll need a Google Cloud project (one will be detected or created).")
+		fmt.Println()
+		fmt.Println("IMPORTANT: When the setup offers to log you in at the end,")
+		fmt.Println("           choose NO — we'll handle login separately with")
+		fmt.Println("           the right scopes.")
+		fmt.Println()
+		fmt.Print("Press Enter to start setup...")
+		reader.ReadString('\n')
+		fmt.Println()
+
+		c := exec.Command("sh", "-c", "gws auth setup")
+		c.Stdin = os.Stdin
+		c.Stdout = os.Stdout
+		c.Stderr = os.Stderr
+		if err := c.Run(); err != nil {
+			fmt.Printf("\n⚠ Setup had issues: %s\n", err)
+			fmt.Print("Continue to login anyway? [Y/n] ")
+			answer, _ := reader.ReadString('\n')
+			answer = strings.TrimSpace(strings.ToLower(answer))
+			if answer != "" && answer != "y" && answer != "yes" {
+				return fmt.Errorf("gws setup aborted")
+			}
+		}
+		fmt.Println()
+	}
+
+	// Step 2: Login with scoped access
+	fmt.Println("Step 2: Login with Google Account")
+	fmt.Println()
+	fmt.Println("This will open your browser to authorize access to Google")
+	fmt.Println("Workspace services (Gmail, Drive, Calendar, Docs, Sheets, etc.)")
+	fmt.Println()
+	fmt.Println("╔════════════════════════════════════════════════════════════╗")
+	fmt.Println("║  IMPORTANT: On the consent screen, you MUST check the    ║")
+	fmt.Println("║  boxes for each permission you want to grant.            ║")
+	fmt.Println("║                                                          ║")
+	fmt.Println("║  For unverified apps, Google shows permissions as        ║")
+	fmt.Println("║  UNCHECKED by default. If you skip them, only basic      ║")
+	fmt.Println("║  profile access will be granted and nothing will work.   ║")
+	fmt.Println("╚════════════════════════════════════════════════════════════╝")
+	fmt.Println()
+	fmt.Print("Press Enter to open the login page...")
+	reader.ReadString('\n')
+	fmt.Println()
+
+	loginCmd := "gws auth login -s gmail,drive,calendar,docs,sheets,chat,tasks,keep,forms"
+	c := exec.Command("sh", "-c", loginCmd)
+	c.Stdin = os.Stdin
+	c.Stdout = os.Stdout
+	c.Stderr = os.Stderr
+	if err := c.Run(); err != nil {
+		return fmt.Errorf("gws login failed: %w", err)
+	}
+
+	fmt.Printf("\n✓ gws authenticated\n")
+	generateSkillsAfterAuth(tool)
+	checkShellenvSetup()
 	return nil
 }
 

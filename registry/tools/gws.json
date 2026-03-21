@@ -31,7 +31,7 @@
     "auth_check": "gws auth status",
     "auth_check_pattern": "\"auth_method\":\\s*\"(?!none)",
     "auth_command": "gws auth setup",
-    "auth_hint": "This will configure a GCP OAuth client (if needed) then log you in to your Google account"
+    "auth_hint": "Guided setup — configures OAuth client then logs in with the right scopes"
   },
   "skill_template": "",
   "skills_source": "googleworkspace/cli"
