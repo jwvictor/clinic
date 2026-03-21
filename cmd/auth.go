@@ -7,6 +7,8 @@ import (
 	"os/exec"
 	"strings"
 
+	"github.com/charmbracelet/huh"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/spf13/cobra"
 	"github.com/jwvictor/clinic/internal/config"
 	"github.com/jwvictor/clinic/internal/doctor"
@@ -148,76 +150,116 @@ func runAuth(toolName string) error {
 }
 
 // runGwsAuth handles the multi-step Google Workspace CLI auth flow.
-// gws requires: (1) OAuth client setup via gws auth setup, then
-// (2) a scoped login via gws auth login -s. The setup step opens a TUI
-// wizard; the login step opens a browser where the user MUST check the
-// scope checkboxes (unverified apps show them unchecked by default).
 func runGwsAuth(tool registry.ToolDef) error {
-	reader := bufio.NewReader(os.Stdin)
+	// Styles
+	title := lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("12")).Render
+	step := lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("14")).Render
+	success := lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("10")).Render
+	warn := lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("11")).Render
+	dim := lipgloss.NewStyle().Foreground(lipgloss.Color("8")).Render
+	warningBox := lipgloss.NewStyle().
+		Border(lipgloss.RoundedBorder()).
+		BorderForeground(lipgloss.Color("11")).
+		Padding(1, 2).
+		Width(62)
 
-	// Step 1: Check if already set up
-	fmt.Println("─── Google Workspace CLI Authentication ───")
 	fmt.Println()
-	fmt.Println("This is a two-step process:")
-	fmt.Println("  1. Set up a GCP OAuth client (one-time setup)")
-	fmt.Println("  2. Log in with your Google account")
+	fmt.Println(title("Google Workspace CLI Authentication"))
+	fmt.Println()
+	fmt.Println(dim("Gmail, Drive, Calendar, Docs, Sheets, Chat, Tasks, and more"))
 	fmt.Println()
 
 	// Check if client_secret.json already exists
 	home, _ := os.UserHomeDir()
 	clientSecretPath := home + "/.config/gws/client_secret.json"
-	if _, err := os.Stat(clientSecretPath); err == nil {
-		fmt.Println("✓ OAuth client already configured (found client_secret.json)")
+	needsSetup := false
+	if _, err := os.Stat(clientSecretPath); err != nil {
+		needsSetup = true
+	}
+
+	if needsSetup {
+		fmt.Println(step("Step 1 of 2") + "  OAuth Client Setup")
 		fmt.Println()
-	} else {
-		fmt.Println("Step 1: OAuth Client Setup")
+		fmt.Println("  This will walk you through creating a GCP OAuth client.")
+		fmt.Println("  You'll need a Google Cloud project (one will be detected")
+		fmt.Println("  or created automatically).")
 		fmt.Println()
-		fmt.Println("This will walk you through creating a GCP OAuth client.")
-		fmt.Println("You'll need a Google Cloud project (one will be detected or created).")
-		fmt.Println()
-		fmt.Println("IMPORTANT: When the setup offers to log you in at the end,")
-		fmt.Println("           choose NO — we'll handle login separately with")
-		fmt.Println("           the right scopes.")
-		fmt.Println()
-		fmt.Print("Press Enter to start setup...")
-		reader.ReadString('\n')
+		fmt.Println(warn("  When the setup offers to log you in at the end,"))
+		fmt.Println(warn("  choose NO") + " — we'll handle login in step 2 with")
+		fmt.Println("  the right permissions.")
 		fmt.Println()
 
+		var proceed bool
+		huh.NewConfirm().
+			Title("Ready to start setup?").
+			Affirmative("Let's go").
+			Negative("Cancel").
+			Value(&proceed).
+			Run()
+
+		if !proceed {
+			return fmt.Errorf("gws setup cancelled")
+		}
+
+		fmt.Println()
 		c := exec.Command("sh", "-c", "gws auth setup")
 		c.Stdin = os.Stdin
 		c.Stdout = os.Stdout
 		c.Stderr = os.Stderr
 		if err := c.Run(); err != nil {
-			fmt.Printf("\n⚠ Setup had issues: %s\n", err)
-			fmt.Print("Continue to login anyway? [Y/n] ")
-			answer, _ := reader.ReadString('\n')
-			answer = strings.TrimSpace(strings.ToLower(answer))
-			if answer != "" && answer != "y" && answer != "yes" {
+			fmt.Println()
+			fmt.Println(warn("Setup had issues: ") + err.Error())
+			fmt.Println()
+			var cont bool
+			huh.NewConfirm().
+				Title("Continue to login anyway?").
+				Affirmative("Yes, continue").
+				Negative("Abort").
+				Value(&cont).
+				Run()
+			if !cont {
 				return fmt.Errorf("gws setup aborted")
 			}
 		}
 		fmt.Println()
+	} else {
+		fmt.Println(success("  ✓") + " OAuth client already configured")
+		fmt.Println()
 	}
 
 	// Step 2: Login with scoped access
-	fmt.Println("Step 2: Login with Google Account")
+	stepLabel := "Step 2 of 2"
+	if !needsSetup {
+		stepLabel = "Login"
+	}
+	fmt.Println(step(stepLabel) + "  Google Account Authorization")
 	fmt.Println()
-	fmt.Println("This will open your browser to authorize access to Google")
-	fmt.Println("Workspace services (Gmail, Drive, Calendar, Docs, Sheets, etc.)")
-	fmt.Println()
-	fmt.Println("╔════════════════════════════════════════════════════════════╗")
-	fmt.Println("║  IMPORTANT: On the consent screen, you MUST check the    ║")
-	fmt.Println("║  boxes for each permission you want to grant.            ║")
-	fmt.Println("║                                                          ║")
-	fmt.Println("║  For unverified apps, Google shows permissions as        ║")
-	fmt.Println("║  UNCHECKED by default. If you skip them, only basic      ║")
-	fmt.Println("║  profile access will be granted and nothing will work.   ║")
-	fmt.Println("╚════════════════════════════════════════════════════════════╝")
-	fmt.Println()
-	fmt.Print("Press Enter to open the login page...")
-	reader.ReadString('\n')
+	fmt.Println("  Your browser will open to authorize access to Google")
+	fmt.Println("  Workspace services.")
 	fmt.Println()
 
+	boxContent := warn("Check ALL the permission boxes!") + "\n\n" +
+		"For unverified apps, Google shows each\n" +
+		"permission as an " + warn("unchecked checkbox") + ".\n\n" +
+		"If you don't check them, only basic profile\n" +
+		"access will be granted and " + warn("nothing will work") + "."
+
+	fmt.Println(warningBox.Render(boxContent))
+	fmt.Println()
+
+	var proceed bool
+	huh.NewConfirm().
+		Title("Open browser to log in?").
+		Affirmative("Open browser").
+		Negative("Cancel").
+		Value(&proceed).
+		Run()
+
+	if !proceed {
+		return fmt.Errorf("gws login cancelled")
+	}
+
+	fmt.Println()
 	loginCmd := "gws auth login -s gmail,drive,calendar,docs,sheets,chat,tasks,keep,forms"
 	c := exec.Command("sh", "-c", loginCmd)
 	c.Stdin = os.Stdin
@@ -227,7 +269,8 @@ func runGwsAuth(tool registry.ToolDef) error {
 		return fmt.Errorf("gws login failed: %w", err)
 	}
 
-	fmt.Printf("\n✓ gws authenticated\n")
+	fmt.Println()
+	fmt.Println(success("  ✓ Google Workspace authenticated"))
 	generateSkillsAfterAuth(tool)
 	checkShellenvSetup()
 	return nil
