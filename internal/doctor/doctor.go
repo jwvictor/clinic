@@ -8,6 +8,7 @@ import (
 
 	"github.com/jwvictor/clinic/internal/installer"
 	"github.com/jwvictor/clinic/internal/registry"
+	"github.com/jwvictor/clinic/internal/skills"
 )
 
 // ToolHealth represents the full health status of a managed tool.
@@ -113,10 +114,23 @@ func checkAuth(auth registry.AuthDef) (bool, string) {
 }
 
 func checkSkillExists(toolName string) bool {
+	// Check the direct tool name first
 	paths := skillPaths(toolName)
 	for _, p := range paths {
 		if fileExists(p) {
 			return true
+		}
+	}
+	// For many-to-one tools (e.g. gws → gws-gmail, gws-drive, ...),
+	// check if any manifest-tracked skill directories exist.
+	manifest := skills.LoadManifest()
+	if dirs, ok := manifest[toolName]; ok {
+		for _, dir := range dirs {
+			for _, p := range skillPaths(dir) {
+				if fileExists(p) {
+					return true
+				}
+			}
 		}
 	}
 	return false
