@@ -39,6 +39,7 @@ func init() {
 	rootCmd.AddCommand(nukeCmd)
 	rootCmd.AddCommand(upgradeCmd)
 	rootCmd.AddCommand(selfUpdateCmd)
+	rootCmd.AddCommand(searchCmd)
 }
 
 var versionCmd = &cobra.Command{

@@ -61,10 +61,14 @@ func Platform() (os_ string, arch string) {
 	return
 }
 
+// currentSchemaVersion is the latest lockfile schema version that this build of clinic understands.
+const currentSchemaVersion = 1
+
 // Lockfile represents clinic.toml (simplified as JSON for now, will migrate to TOML).
 type Lockfile struct {
-	Project ProjectConfig          `json:"project"`
-	Tools   map[string]ToolLock    `json:"tools"`
+	SchemaVersion int                    `json:"schema_version"`
+	Project       ProjectConfig          `json:"project"`
+	Tools         map[string]ToolLock    `json:"tools"`
 }
 
 type ProjectConfig struct {
@@ -89,8 +93,9 @@ func LoadLockfile() (*Lockfile, error) {
 	if err != nil {
 		if os.IsNotExist(err) {
 			return &Lockfile{
-				Project: ProjectConfig{ClinicVersion: "0.1.0"},
-				Tools:   make(map[string]ToolLock),
+				SchemaVersion: currentSchemaVersion,
+				Project:       ProjectConfig{ClinicVersion: "0.1.0"},
+				Tools:         make(map[string]ToolLock),
 			}, nil
 		}
 		return nil, err
@@ -101,6 +106,16 @@ func LoadLockfile() (*Lockfile, error) {
 	}
 	if lf.Tools == nil {
 		lf.Tools = make(map[string]ToolLock)
+	}
+	// Backfill schema version for lockfiles written before versioning was added.
+	if lf.SchemaVersion == 0 {
+		lf.SchemaVersion = 1
+	}
+	if lf.SchemaVersion > currentSchemaVersion {
+		return nil, fmt.Errorf(
+			"lockfile has schema_version %d but this build of clinic only supports up to %d — please update clinic",
+			lf.SchemaVersion, currentSchemaVersion,
+		)
 	}
 	return &lf, nil
 }
@@ -173,6 +188,7 @@ func HasShellenvInRC() bool {
 
 // Save writes the lockfile to disk.
 func (lf *Lockfile) Save() error {
+	lf.SchemaVersion = currentSchemaVersion
 	data, err := json.MarshalIndent(lf, "", "  ")
 	if err != nil {
 		return err

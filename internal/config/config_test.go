@@ -202,6 +202,105 @@ func TestEnsureDirs(t *testing.T) {
 	}
 }
 
+func TestLoadLockfileWithoutSchemaVersion(t *testing.T) {
+	tmp := t.TempDir()
+	t.Setenv("HOME", tmp)
+
+	if err := os.MkdirAll(filepath.Join(tmp, ".clinic"), 0755); err != nil {
+		t.Fatal(err)
+	}
+
+	// Write a lockfile that has no schema_version (simulates an old lockfile).
+	raw := `{"project":{"clinic_version":"0.1.0"},"tools":{}}`
+	if err := os.WriteFile(filepath.Join(tmp, ".clinic", "clinic.json"), []byte(raw), 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	lf, err := LoadLockfile()
+	if err != nil {
+		t.Fatalf("LoadLockfile() error: %v", err)
+	}
+	if lf.SchemaVersion != 1 {
+		t.Errorf("SchemaVersion = %d, want 1", lf.SchemaVersion)
+	}
+}
+
+func TestLoadLockfileWithSchemaVersion1(t *testing.T) {
+	tmp := t.TempDir()
+	t.Setenv("HOME", tmp)
+
+	if err := os.MkdirAll(filepath.Join(tmp, ".clinic"), 0755); err != nil {
+		t.Fatal(err)
+	}
+
+	raw := `{"schema_version":1,"project":{"clinic_version":"0.1.0"},"tools":{}}`
+	if err := os.WriteFile(filepath.Join(tmp, ".clinic", "clinic.json"), []byte(raw), 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	lf, err := LoadLockfile()
+	if err != nil {
+		t.Fatalf("LoadLockfile() error: %v", err)
+	}
+	if lf.SchemaVersion != 1 {
+		t.Errorf("SchemaVersion = %d, want 1", lf.SchemaVersion)
+	}
+}
+
+func TestLoadLockfileFutureSchemaVersionErrors(t *testing.T) {
+	tmp := t.TempDir()
+	t.Setenv("HOME", tmp)
+
+	if err := os.MkdirAll(filepath.Join(tmp, ".clinic"), 0755); err != nil {
+		t.Fatal(err)
+	}
+
+	raw := `{"schema_version":99,"project":{"clinic_version":"0.1.0"},"tools":{}}`
+	if err := os.WriteFile(filepath.Join(tmp, ".clinic", "clinic.json"), []byte(raw), 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	_, err := LoadLockfile()
+	if err == nil {
+		t.Fatal("expected error for future schema version, got nil")
+	}
+}
+
+func TestSaveWritesSchemaVersion(t *testing.T) {
+	tmp := t.TempDir()
+	t.Setenv("HOME", tmp)
+
+	if err := os.MkdirAll(filepath.Join(tmp, ".clinic"), 0755); err != nil {
+		t.Fatal(err)
+	}
+
+	lf := &Lockfile{
+		Project: ProjectConfig{ClinicVersion: "0.1.0"},
+		Tools:   make(map[string]ToolLock),
+	}
+	if err := lf.Save(); err != nil {
+		t.Fatalf("Save() error: %v", err)
+	}
+
+	data, err := os.ReadFile(LockfilePath())
+	if err != nil {
+		t.Fatalf("reading lockfile: %v", err)
+	}
+
+	var raw map[string]json.RawMessage
+	if err := json.Unmarshal(data, &raw); err != nil {
+		t.Fatalf("parsing lockfile JSON: %v", err)
+	}
+
+	sv, ok := raw["schema_version"]
+	if !ok {
+		t.Fatal("schema_version field missing from saved lockfile")
+	}
+	if string(sv) != "1" {
+		t.Errorf("schema_version = %s, want 1", string(sv))
+	}
+}
+
 func TestPlatformReturnsNonEmpty(t *testing.T) {
 	os_, arch := Platform()
 	if os_ == "" {
