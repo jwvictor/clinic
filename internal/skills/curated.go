@@ -360,31 +360,6 @@ You have ` + "`yt-dlp`" + ` (v{{.Version}}) installed.
 - Use ` + "`--cookies-from-browser chrome`" + ` if a video requires authentication
 `,
 
-	"circumflex": `---
-name: hackernews
-description: >
-  Use when the user wants to browse Hacker News — read top stories, view
-  comments, or find tech news. Circumflex (clx) is installed.
-allowed-tools: Bash(clx:*)
----
-
-You have ` + "`clx`" + ` (circumflex, v{{.Version}}) installed.
-
-## Key commands
-- ` + "`clx`" + ` — launch the interactive Hacker News TUI
-- Navigate with arrow keys or vim-style j/k
-- Enter to open article in Reader Mode
-- ` + "`c`" + ` to view comments
-- ` + "`o`" + ` to open in browser
-- ` + "`f`" + ` to toggle favorites
-
-## Conventions
-- Circumflex is primarily an interactive TUI — launch it for the user to browse
-- Reader Mode renders articles in the terminal (no browser needed)
-- Comments are rendered with syntax highlighting and threading
-- Use it when the user asks about tech news, trending topics, or HN discussions
-`,
-
 	// "linear" uses vendor skills from schpet/linear-cli
 
 	"rclone": `---

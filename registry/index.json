@@ -3,7 +3,6 @@
   "tools": [
     "aws",
     "az",
-    "circumflex",
     "datadog",
     "docker",
     "doctl",
