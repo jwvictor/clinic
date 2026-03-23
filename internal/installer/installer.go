@@ -323,6 +323,11 @@ func symlinkToPath(command string, srcDir string) {
 	os.Symlink(src, dst)
 }
 
+// RunInstallCmd runs a command (used by upgrade to invoke package managers).
+func RunInstallCmd(name string, args ...string) error {
+	return runInstall(name, args...)
+}
+
 func runInstall(name string, args ...string) error {
 	cmd := exec.Command(name, args...)
 	out, err := cmd.CombinedOutput()

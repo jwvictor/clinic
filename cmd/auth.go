@@ -115,7 +115,7 @@ func runAuth(toolName string) error {
 	if headless && tool.Auth.AuthCmdHeadless != "" {
 		authCommand = tool.Auth.AuthCmdHeadless
 		fmt.Printf("Authenticating %s (headless mode)...\n", toolName)
-		fmt.Println("A URL will be displayed — open it on any device with a browser.\n")
+		fmt.Println("A URL will be displayed — open it on any device with a browser.")
 	} else if headless {
 		fmt.Printf("Authenticating %s...\n", toolName)
 		fmt.Printf("⚠ No specific headless auth flow known for %s — trying default auth.\n", toolName)
