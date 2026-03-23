@@ -53,15 +53,15 @@ func TestGetToolInvalid(t *testing.T) {
 func TestGetStackValid(t *testing.T) {
 	reg := Load()
 
-	stack, ok := reg.GetStack("devops")
+	stack, ok := reg.GetStack("basics")
 	if !ok {
-		t.Fatal("GetStack(\"devops\") not found")
+		t.Fatal("GetStack(\"basics\") not found")
 	}
-	if stack.Name != "devops" {
-		t.Errorf("stack.Name = %q, want %q", stack.Name, "devops")
+	if stack.Name != "basics" {
+		t.Errorf("stack.Name = %q, want %q", stack.Name, "basics")
 	}
 	if len(stack.Tools) == 0 {
-		t.Error("devops stack has no tools")
+		t.Error("basics stack has no tools")
 	}
 }
 
