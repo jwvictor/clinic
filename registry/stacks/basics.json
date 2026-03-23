@@ -1,0 +1,11 @@
+{
+  "name": "basics",
+  "description": "Universal productivity essentials",
+  "tools": [
+    "gws",
+    "slack",
+    "notion",
+    "linear",
+    "jq"
+  ]
+}

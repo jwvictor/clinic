@@ -1,0 +1,13 @@
+{
+  "name": "developer",
+  "description": "Everything a developer needs, from productivity to code",
+  "tools": [
+    "gws",
+    "slack",
+    "notion",
+    "linear",
+    "gh",
+    "ngrok",
+    "jq"
+  ]
+}

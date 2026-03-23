@@ -42,11 +42,9 @@
     "yt-dlp"
   ],
   "stacks": [
+    "basics",
     "creator",
-    "devops",
-    "frontend",
-    "gcp-stack",
-    "indie-hacker",
-    "saas-founder"
+    "developer",
+    "founder"
   ]
 }

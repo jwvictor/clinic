@@ -1,0 +1,14 @@
+{
+  "name": "founder",
+  "description": "Developer essentials plus business tools",
+  "tools": [
+    "gws",
+    "slack",
+    "notion",
+    "linear",
+    "gh",
+    "stripe",
+    "ngrok",
+    "jq"
+  ]
+}

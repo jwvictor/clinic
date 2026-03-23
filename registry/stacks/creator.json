@@ -1,12 +1,15 @@
 {
   "name": "creator",
-  "description": "Content creator and social media toolkit",
+  "description": "Productivity plus content and social media tools",
   "tools": [
-    "x-cli",
-    "postiz",
-    "typefully",
-    "yt-dlp",
+    "gws",
+    "slack",
     "notion",
-    "slack"
+    "linear",
+    "x-cli",
+    "typefully",
+    "postiz",
+    "yt-dlp",
+    "jq"
   ]
 }
