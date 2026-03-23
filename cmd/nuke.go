@@ -113,10 +113,3 @@ or run: rm $(which clinic))`,
 	},
 }
 
-func toolNames(lf *config.Lockfile) string {
-	names := make([]string, 0, len(lf.Tools))
-	for name := range lf.Tools {
-		names = append(names, name)
-	}
-	return strings.Join(names, ", ")
-}
