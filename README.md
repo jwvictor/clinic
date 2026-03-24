@@ -5,10 +5,10 @@
 Clinic manages collections of agent-friendly CLI tools as unified, opinionated stacks. One command turns a bare terminal into a fully agent-capable workspace — tools installed, authenticated, and visible to your AI agent.
 
 ```
-clinic init --stack saas-founder
+clinic init --stack founder
 ```
 
-That installs `gh`, `vercel`, `stripe`, `supabase`, `firebase`, `sentry-cli`, `gws`, `jq`, and `ngrok` — then generates skill files so [OpenClaw](https://github.com/openclaw/openclaw), Claude Code, Gemini CLI, and other AI agents know how to use them.
+That installs `gws`, `slack`, `notion`, `linear`, `gh`, `stripe`, `ngrok`, and `jq` — then generates skill files so [OpenClaw](https://github.com/openclaw/openclaw), Claude Code, Gemini CLI, and other AI agents know how to use them.
 
 ## Why
 
@@ -32,7 +32,7 @@ curl -fsSL https://getclinic.sh/install | sh
 Then pick a stack and go:
 
 ```bash
-clinic init --stack saas-founder
+clinic init --stack founder
 ```
 
 Or add tools one at a time:
@@ -88,13 +88,17 @@ clinic init [--stack <name>]    Set up a workspace with a curated stack
 clinic add <tool>               Add a single tool
 clinic remove <tool>            Remove a tool from your workspace
 clinic list [--all]             List installed or available tools
+clinic search <query>           Search available tools by name, description, or category
 clinic doctor                   Health check all tools
 clinic auth <tool>              Authenticate a tool
 clinic auth --status            Show auth status for all tools
 clinic generate                 Regenerate skill files
 clinic update [<tool>]          Update lockfile versions
+clinic upgrade [<tool>]         Upgrade one or all installed tools via their package managers
 clinic stacks                   Browse available stacks
 clinic shellenv                 Print PATH setup for shell profile
+clinic self-update              Update clinic itself to the latest release
+clinic nuke                     Uninstall all managed tools and remove all traces of Clinic
 clinic version                  Print version
 ```
 
