@@ -250,9 +250,26 @@ func checkNodeVersion(requires string) bool {
 	if err != nil {
 		return false
 	}
-	// Simple check — just verify node exists. Full semver parsing can come later.
-	_ = out
-	return true
+
+	// Parse installed version (e.g. "v22.1.0" → 22)
+	ver := strings.TrimSpace(string(out))
+	ver = strings.TrimPrefix(ver, "v")
+	parts := strings.SplitN(ver, ".", 3)
+	if len(parts) == 0 {
+		return false
+	}
+	installedMajor := 0
+	fmt.Sscanf(parts[0], "%d", &installedMajor)
+
+	// Parse requirement (e.g. "node >= 18" → 18)
+	reqParts := strings.Fields(requires)
+	if len(reqParts) < 3 {
+		return true // can't parse, assume OK
+	}
+	requiredMajor := 0
+	fmt.Sscanf(reqParts[2], "%d", &requiredMajor)
+
+	return installedMajor >= requiredMajor
 }
 
 // Uninstall removes a tool using the package manager that installed it.

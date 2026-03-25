@@ -229,10 +229,12 @@ func parseRegistry(indexBytes []byte, toolsFS fs.FS, stacksFS fs.FS) (*Registry,
 	for _, name := range idx.Tools {
 		data, err := fs.ReadFile(toolsFS, name+".json")
 		if err != nil {
+			fmt.Fprintf(os.Stderr, "warning: skipping tool %q: %v\n", name, err)
 			continue
 		}
 		var t ToolDef
 		if err := json.Unmarshal(data, &t); err != nil {
+			fmt.Fprintf(os.Stderr, "warning: skipping tool %q: invalid JSON: %v\n", name, err)
 			continue
 		}
 		reg.Tools[t.Name] = t
@@ -241,10 +243,12 @@ func parseRegistry(indexBytes []byte, toolsFS fs.FS, stacksFS fs.FS) (*Registry,
 	for _, name := range idx.Stacks {
 		data, err := fs.ReadFile(stacksFS, name+".json")
 		if err != nil {
+			fmt.Fprintf(os.Stderr, "warning: skipping stack %q: %v\n", name, err)
 			continue
 		}
 		var s StackDef
 		if err := json.Unmarshal(data, &s); err != nil {
+			fmt.Fprintf(os.Stderr, "warning: skipping stack %q: invalid JSON: %v\n", name, err)
 			continue
 		}
 		reg.Stacks[s.Name] = s
