@@ -13,7 +13,8 @@
         "macos",
         "linux"
       ],
-      "package": "@salesforce/cli"
+      "package": "@salesforce/cli",
+      "global": true
     },
     {
       "type": "brew",

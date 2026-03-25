@@ -13,7 +13,8 @@
         "macos",
         "linux"
       ],
-      "package": "resend-cli"
+      "package": "resend-cli",
+      "global": true
     }
   ],
   "auth": {
