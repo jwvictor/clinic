@@ -1,5 +1,7 @@
 # Clinic
 
+[getclinic.sh](https://getclinic.sh)
+
 **Connect your agent to your Gmail, GitHub, Notion, and 39 more services in one command.**
 
 Clinic manages collections of agent-friendly CLI tools as unified, opinionated stacks. One command turns a bare terminal into a fully agent-capable workspace — tools installed, authenticated, and visible to your AI agent.
